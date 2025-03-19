@@ -100,8 +100,8 @@ class _ItempageState extends State<Itempage> {
                   }
                 });
               },
-              activeColor: Colors.green,
-              checkColor: Colors.black,
+              activeColor: Colors.green.shade800,
+              checkColor: Colors.white,
             ),
           ),
         );
@@ -248,7 +248,7 @@ class _ItempageState extends State<Itempage> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(25),
                   border: Border.all(width: 1.5),
-                  color: Colors.green,
+                  color: Colors.green.shade800,
                 ),
                 child: Center(
                   child: Text(
@@ -275,7 +275,7 @@ class _ItempageState extends State<Itempage> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              icon: const Icon(Icons.close_rounded),
+              icon: const Icon(Icons.arrow_back_ios_new_rounded),
             ),
           ),
         ),

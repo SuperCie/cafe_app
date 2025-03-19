@@ -37,21 +37,7 @@ class Profilescreen extends StatelessWidget {
               imagePath: 'assets/icons/personicon.png',
             ),
             Divider(thickness: 1.0),
-            Tilemodel(
-              text: 'Rewards',
-              imagePath: 'assets/icons/rewardicon.png',
-            ),
-            Divider(thickness: 1.0),
-            Tilemodel(
-              text: 'Address',
-              imagePath: 'assets/icons/locationicon.png',
-            ),
-            Divider(thickness: 1.0),
-            Tilemodel(
-              text: 'Payment',
-              imagePath: 'assets/icons/paymenticon.png',
-            ),
-            Divider(thickness: 1.0),
+
             Tilemodel(
               text: 'Transaction History',
               imagePath: 'assets/icons/transactionicon.png',

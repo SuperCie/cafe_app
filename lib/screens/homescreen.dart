@@ -1,4 +1,5 @@
 import 'package:coffee_app/data/menuitem.dart';
+import 'package:coffee_app/data/storeprovider.dart';
 import 'package:coffee_app/models/components/sliverappbarmodel.dart';
 import 'package:coffee_app/models/components/slivercategorybar.dart';
 import 'package:coffee_app/models/components/tileitem.dart';
@@ -17,6 +18,7 @@ class _HomescreenState extends State<Homescreen> {
   @override
   Widget build(BuildContext context) {
     final userCart = context.watch<Menuitem>();
+    final selectedStore = Provider.of<Storeprovider>(context).selectedStore;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: CustomScrollView(
@@ -35,15 +37,19 @@ class _HomescreenState extends State<Homescreen> {
           ),
         ],
       ),
+
       floatingActionButton:
           userCart.cart.isNotEmpty
               ? FloatingActionButton(
-                backgroundColor: Colors.green,
+                backgroundColor: Colors.green.shade800,
                 child: Icon(Icons.shopping_bag_rounded, color: Colors.black),
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Cartscreen()),
+                    MaterialPageRoute(
+                      builder:
+                          (context) => Cartscreen(selectedStore: selectedStore),
+                    ),
                   );
                 },
               )

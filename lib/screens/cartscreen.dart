@@ -1,21 +1,70 @@
-import 'package:coffee_app/data/cart.dart';
-import 'package:coffee_app/data/item.dart';
 import 'package:coffee_app/data/menuitem.dart';
+import 'package:coffee_app/data/paymeths.dart';
+import 'package:coffee_app/data/store.dart';
 import 'package:coffee_app/models/components/carttile.dart';
 import 'package:coffee_app/models/components/containermodel.dart';
+import 'package:coffee_app/models/components/containernopad.dart';
 import 'package:coffee_app/models/components/myformfield.dart';
+import 'package:coffee_app/screens/paymetscreen.dart';
+import 'package:coffee_app/screens/storescreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-class Cartscreen extends StatelessWidget {
-  const Cartscreen({super.key});
+class Cartscreen extends StatefulWidget {
+  final Store? selectedStore;
+  final Paymeths? selectedMethods;
+  const Cartscreen({Key? key, this.selectedStore, this.selectedMethods})
+    : super(key: key);
+
+  @override
+  State<Cartscreen> createState() => _CartscreenState();
+}
+
+class _CartscreenState extends State<Cartscreen> {
+  Store? _selectedStore;
+  Paymeths? _selectedMethods;
+  final reNoteController = TextEditingController();
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedStore = widget.selectedStore; // Simpan data awal (kalau ada)
+    _selectedMethods = widget.selectedMethods;
+  }
+
+  //function
+  void pickStore() async {
+    final pickedStore = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Storescreen(selectedStore: _selectedStore),
+      ), // Halaman pilih store
+    );
+    if (pickedStore is Store) {
+      setState(() {
+        _selectedStore = pickedStore;
+      });
+    }
+  }
+
+  void selectPaymentMethods() async {
+    final selectedPayment = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Paymetscreen()),
+    );
+
+    if (selectedPayment is Paymeths) {
+      setState(() {
+        _selectedMethods = selectedPayment;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final reNoteController = TextEditingController();
-    final _scrollController = ScrollController();
-
     return Consumer<Menuitem>(
       builder: (context, menuItem, child) {
         final userCart = menuItem.cart;
@@ -44,26 +93,39 @@ class Cartscreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Icon(Icons.store_rounded),
-                      SizedBox(width: 10),
-                      Text(
-                        'Choose your store',
-                        style: GoogleFonts.montserrat(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Containermodel(
-                    widget: Text(
-                      'Kopi Soe Pekanbaru',
+                  ListTile(
+                    onTap: () => pickStore(),
+                    leading: Icon(Icons.store_rounded),
+                    title: Text(
+                      _selectedStore?.name ?? "Choose Store",
                       style: GoogleFonts.montserrat(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
+                    ),
+
+                    trailing: Icon(Icons.arrow_drop_down_circle_rounded),
+                  ),
+                  Visibility(
+                    visible: _selectedStore != null,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Text(
+                        _selectedStore?.address ?? "",
+                        style: GoogleFonts.montserrat(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      'Your order will be ready in approximately 15-25 minutes.',
+                      style: GoogleFonts.montserrat(fontSize: 16),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                   Divider(thickness: 1.5),
@@ -97,14 +159,16 @@ class Cartscreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: userCart.length,
-                    itemBuilder: (context, index) {
-                      final cartItem = userCart[index];
-                      return Carttile(cart: cartItem);
-                    },
+                  SlidableAutoCloseBehavior(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: userCart.length,
+                      itemBuilder: (context, index) {
+                        final cartItem = userCart[index];
+                        return Carttile(cart: cartItem);
+                      },
+                    ),
                   ),
                   SizedBox(height: 20),
                   Row(
@@ -139,37 +203,56 @@ class Cartscreen extends StatelessWidget {
                   ),
                   SizedBox(height: 20),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Icons.payment_outlined),
-                      SizedBox(width: 10),
-                      Text(
-                        'Payment Method',
-                        style: GoogleFonts.montserrat(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                      Row(
+                        children: [
+                          Icon(Icons.payment_outlined),
+                          SizedBox(width: 10),
+                          Text(
+                            'Payment Method',
+                            style: GoogleFonts.montserrat(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      TextButton(
+                        onPressed: selectPaymentMethods,
+                        child: Text(
+                          'View All >',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  Containermodel(
-                    widget: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Image.asset('assets/images/bcaicon.png', scale: 15),
-                            Text(
-                              'Transfer Bank - Bank BCA',
-                              style: GoogleFonts.montserrat(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
+                  GestureDetector(
+                    onTap: selectPaymentMethods,
+                    child: Containernopad(
+                      widget: ListTile(
+                        leading: Image.asset(
+                          _selectedMethods?.imagePath ??
+                              "assets/images/payment/nocardicon.png",
+                          scale: 15,
                         ),
-                      ],
+                        title: Text(
+                          _selectedMethods != null
+                              ? "Transfer Bank ${_selectedMethods?.name}"
+                              : 'Choose Payment Methods',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
+                  SizedBox(height: 20),
                   Row(
                     children: [
                       Icon(Icons.receipt_long_rounded),
@@ -201,7 +284,7 @@ class Cartscreen extends StatelessWidget {
                               menuItem.formattedTCP,
                               style: GoogleFonts.montserrat(
                                 fontSize: 16,
-                                color: Colors.red,
+                                color: Colors.red.shade800,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -282,12 +365,18 @@ class Cartscreen extends StatelessWidget {
                     Navigator.pop(context);
                   },
                   child: Container(
-                    color: Colors.red,
-                    width: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade800,
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(25),
+                      ),
+                    ),
+                    padding: EdgeInsets.all(8),
+                    width: 130,
                     height: double.infinity,
                     child: Center(
                       child: Text(
-                        'Pay',
+                        'Make Order',
                         style: GoogleFonts.montserrat(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

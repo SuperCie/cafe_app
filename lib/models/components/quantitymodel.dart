@@ -22,8 +22,10 @@ class Quantitymodel extends StatelessWidget {
         GestureDetector(
           onTap: onDecrement,
           child: Container(
-            decoration: BoxDecoration(border: Border.all(color: Colors.red)),
-            child: Icon(Icons.remove, size: 20, color: Colors.red),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.red.shade800),
+            ),
+            child: Icon(Icons.remove, size: 20, color: Colors.red.shade800),
           ),
         ),
         // quantity
@@ -35,7 +37,7 @@ class Quantitymodel extends StatelessWidget {
         GestureDetector(
           onTap: onIncrement,
           child: Container(
-            color: Colors.red,
+            color: Colors.red.shade800,
             child: Icon(Icons.add, size: 20, color: Colors.white),
           ),
         ),
