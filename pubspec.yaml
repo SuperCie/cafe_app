@@ -43,6 +43,8 @@ dependencies:
   flutter_map: ^8.1.1
   latlong2: ^0.9.1
   flutter_slidable: ^4.0.0
+  slider_button: ^2.1.0
+  firebase_auth: ^5.5.1
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +73,7 @@ flutter:
     - assets/icons/
     - assets/images/
     - assets/images/payment/
+    - assets/logo/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

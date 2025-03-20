@@ -5,12 +5,14 @@ class Myformfield extends StatelessWidget {
   final String text;
   void Function()? ontap;
   final String? Function(String?)? validator;
+ final Function(String)? onchanged;
   Myformfield({
     super.key,
     required this.controller,
     required this.text,
     required this.validator,
     required this.ontap,
+    this.onchanged
   });
 
   @override
@@ -32,6 +34,7 @@ class Myformfield extends StatelessWidget {
         ),
         validator: validator,
         onTap: ontap,
+        onChanged: onchanged,
       ),
     );
   }

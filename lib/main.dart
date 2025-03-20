@@ -1,3 +1,4 @@
+import 'package:coffee_app/autentication/registerscreen.dart';
 import 'package:coffee_app/data/menuitem.dart';
 import 'package:coffee_app/data/paymethprovider.dart';
 import 'package:coffee_app/data/storeprovider.dart';

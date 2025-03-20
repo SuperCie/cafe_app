@@ -36,7 +36,7 @@ class Sliverappbarmodel extends StatelessWidget {
     }
 
     return SliverAppBar(
-      expandedHeight: 130,
+      expandedHeight: 100,
       floating: false,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
@@ -52,15 +52,8 @@ class Sliverappbarmodel extends StatelessWidget {
             ),
           ),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              SizedBox(height: 10),
-              Text(
-                'ITSRINK',
-                style: GoogleFonts.montserrat(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
@@ -69,7 +62,6 @@ class Sliverappbarmodel extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 30),
                     Text(
                       ' HI CHARLES PUTRA👋',
                       style: GoogleFonts.montserrat(

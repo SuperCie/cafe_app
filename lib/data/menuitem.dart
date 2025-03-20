@@ -1,8 +1,13 @@
 import 'package:coffee_app/data/cart.dart';
 import 'package:coffee_app/data/item.dart';
+import 'package:coffee_app/data/paymethprovider.dart';
+import 'package:coffee_app/data/paymeths.dart';
+import 'package:coffee_app/data/store.dart';
+import 'package:coffee_app/data/storeprovider.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class Menuitem extends ChangeNotifier {
   final List<Item> _items = [
@@ -474,7 +479,7 @@ class Menuitem extends ChangeNotifier {
   }
 
   // delete cart item
-  void deleteCart(Cart cartItem) {
+  void deleteCart(Cart cartItem, BuildContext context) {
     int cartIndex = _cart.indexOf(cartItem);
     if (cartIndex != -1) {
       if (_cart[cartIndex].quantity > 1) {
@@ -483,12 +488,14 @@ class Menuitem extends ChangeNotifier {
         _cart.removeAt(cartIndex);
       }
     }
+    _checkCartEmpty(context);
     notifyListeners();
   }
 
   // clear all item in cart
-  void deleteAllCart() {
+  void deleteAllCart(BuildContext context) {
     cart.clear();
+    _checkCartEmpty(context);
     notifyListeners();
   }
 
@@ -532,16 +539,18 @@ class Menuitem extends ChangeNotifier {
   }
 
   // user input note data
-  String optionalNote = '';
   String restaurantNote = '';
 
-  //  input optional note
-  void userInputOptNote(String optionalNt) {
-    optionalNote = optionalNt;
+  //  input driver note
+  void userInputRstNote(String restaurantNt) {
+    restaurantNote = restaurantNt;
+    notifyListeners();
+  }
 
-    //  input driver note
-    void userInputRstNote(String restaurantNt) {
-      restaurantNote = restaurantNt;
+  void _checkCartEmpty(BuildContext context) {
+    if (cart.isEmpty) {
+      Provider.of<Storeprovider>(context, listen: false).clearStore();
+      Provider.of<Paymethprovider>(context, listen: false).clearMethod();
     }
   }
 }

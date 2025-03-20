@@ -1,17 +1,12 @@
+import 'package:coffee_app/data/paymethprovider.dart';
 import 'package:coffee_app/data/paymeths.dart';
 import 'package:coffee_app/models/components/paymenttile.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
-class Paymetscreen extends StatefulWidget {
+class Paymetscreen extends StatelessWidget {
   const Paymetscreen({super.key});
-
-  @override
-  State<Paymetscreen> createState() => _PaymetscreenState();
-}
-
-class _PaymetscreenState extends State<Paymetscreen> {
-  Paymeths? selectedMethods;
 
   void selectPayment(BuildContext context, Paymeths methods) {
     showDialog(
@@ -59,8 +54,12 @@ class _PaymetscreenState extends State<Paymetscreen> {
               ),
               GestureDetector(
                 onTap: () {
+                  Provider.of<Paymethprovider>(
+                    context,
+                    listen: false,
+                  ).setPaymentMethod(methods);
                   Navigator.pop(context);
-                  Navigator.pop(context, methods);
+                  Navigator.pop(context);
                 },
                 child: Container(
                   padding: EdgeInsets.all(10),

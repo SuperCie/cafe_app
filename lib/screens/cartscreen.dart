@@ -1,10 +1,13 @@
 import 'package:coffee_app/data/menuitem.dart';
+import 'package:coffee_app/data/paymethprovider.dart';
 import 'package:coffee_app/data/paymeths.dart';
 import 'package:coffee_app/data/store.dart';
+import 'package:coffee_app/data/storeprovider.dart';
 import 'package:coffee_app/models/components/carttile.dart';
 import 'package:coffee_app/models/components/containermodel.dart';
 import 'package:coffee_app/models/components/containernopad.dart';
 import 'package:coffee_app/models/components/myformfield.dart';
+import 'package:coffee_app/screens/orderscreen.dart';
 import 'package:coffee_app/screens/paymetscreen.dart';
 import 'package:coffee_app/screens/storescreen.dart';
 import 'package:flutter/material.dart';
@@ -23,16 +26,14 @@ class Cartscreen extends StatefulWidget {
 }
 
 class _CartscreenState extends State<Cartscreen> {
-  Store? _selectedStore;
-  Paymeths? _selectedMethods;
   final reNoteController = TextEditingController();
   final _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _selectedStore = widget.selectedStore; // Simpan data awal (kalau ada)
-    _selectedMethods = widget.selectedMethods;
+    final menuItem = Provider.of<Menuitem>(context, listen: false);
+    reNoteController.text = menuItem.restaurantNote;
   }
 
   //function
@@ -40,13 +41,11 @@ class _CartscreenState extends State<Cartscreen> {
     final pickedStore = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => Storescreen(selectedStore: _selectedStore),
+        builder: (context) => Storescreen(),
       ), // Halaman pilih store
     );
     if (pickedStore is Store) {
-      setState(() {
-        _selectedStore = pickedStore;
-      });
+      Provider.of<Storeprovider>(context, listen: false).setStore(pickedStore);
     }
   }
 
@@ -57,10 +56,50 @@ class _CartscreenState extends State<Cartscreen> {
     );
 
     if (selectedPayment is Paymeths) {
-      setState(() {
-        _selectedMethods = selectedPayment;
-      });
+      Provider.of<Paymethprovider>(
+        context,
+        listen: false,
+      ).setPaymentMethod(selectedPayment);
     }
+  }
+
+  void _validateAndNavigate(BuildContext context) {
+    final storeProvider = Provider.of<Storeprovider>(context, listen: false);
+    final payProvider = Provider.of<Paymethprovider>(context, listen: false);
+    final menuItem = Provider.of<Menuitem>(context, listen: false);
+
+    // Validasi apakah store dan payment method sudah dipilih
+    if (storeProvider.selectedStore == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Please select a store first!",
+            style: GoogleFonts.montserrat(fontSize: 16),
+          ),
+          backgroundColor: Colors.red.shade800,
+        ),
+      );
+      return;
+    }
+
+    if (payProvider.selectedMethods == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Please select a payment method first!",
+            style: GoogleFonts.montserrat(fontSize: 16),
+          ),
+          backgroundColor: Colors.red.shade800,
+        ),
+      );
+      return;
+    }
+
+    // Navigasi ke Orderscreen dengan membawa data
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Orderscreen()),
+    );
   }
 
   @override
@@ -93,32 +132,45 @@ class _CartscreenState extends State<Cartscreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ListTile(
-                    onTap: () => pickStore(),
-                    leading: Icon(Icons.store_rounded),
-                    title: Text(
-                      _selectedStore?.name ?? "Choose Store",
-                      style: GoogleFonts.montserrat(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                  Consumer<Storeprovider>(
+                    builder: (context, storeProvider, child) {
+                      return Column(
+                        children: [
+                          ListTile(
+                            onTap: () => pickStore(),
+                            leading: Icon(Icons.store_rounded),
+                            title: Text(
+                              storeProvider.selectedStore?.name ??
+                                  "Choose Store",
+                              style: GoogleFonts.montserrat(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
 
-                    trailing: Icon(Icons.arrow_drop_down_circle_rounded),
-                  ),
-                  Visibility(
-                    visible: _selectedStore != null,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        _selectedStore?.address ?? "",
-                        style: GoogleFonts.montserrat(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.justify,
-                      ),
-                    ),
+                            trailing: Icon(
+                              Icons.arrow_drop_down_circle_rounded,
+                            ),
+                          ),
+                          Visibility(
+                            visible: storeProvider.selectedStore != null,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
+                              child: Text(
+                                storeProvider.selectedStore?.address ?? "",
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.justify,
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
@@ -147,7 +199,7 @@ class _CartscreenState extends State<Cartscreen> {
                         ],
                       ),
                       TextButton(
-                        onPressed: () => menuItem.deleteAllCart(),
+                        onPressed: () => menuItem.deleteAllCart(context),
                         child: Text(
                           'Delete All',
                           style: GoogleFonts.montserrat(
@@ -200,6 +252,9 @@ class _CartscreenState extends State<Cartscreen> {
                         );
                       });
                     },
+                    onchanged: (value) {
+                      menuItem.userInputRstNote(value);
+                    },
                   ),
                   SizedBox(height: 20),
                   Row(
@@ -231,26 +286,30 @@ class _CartscreenState extends State<Cartscreen> {
                       ),
                     ],
                   ),
-                  GestureDetector(
-                    onTap: selectPaymentMethods,
-                    child: Containernopad(
-                      widget: ListTile(
-                        leading: Image.asset(
-                          _selectedMethods?.imagePath ??
-                              "assets/images/payment/nocardicon.png",
-                          scale: 15,
-                        ),
-                        title: Text(
-                          _selectedMethods != null
-                              ? "Transfer Bank ${_selectedMethods?.name}"
-                              : 'Choose Payment Methods',
-                          style: GoogleFonts.montserrat(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                  Consumer<Paymethprovider>(
+                    builder: (context, payProvider, child) {
+                      return GestureDetector(
+                        onTap: selectPaymentMethods,
+                        child: Containernopad(
+                          widget: ListTile(
+                            leading: Image.asset(
+                              payProvider.selectedMethods?.imagePath ??
+                                  "assets/images/payment/nocardicon.png",
+                              scale: 15,
+                            ),
+                            title: Text(
+                              payProvider.selectedMethods != null
+                                  ? "Transfer Bank ${payProvider.selectedMethods?.name}"
+                                  : 'Choose Payment Methods',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
                   SizedBox(height: 20),
                   Row(
@@ -361,9 +420,7 @@ class _CartscreenState extends State<Cartscreen> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
+                  onTap: () => _validateAndNavigate(context),
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.red.shade800,

@@ -40,7 +40,7 @@ class _CarttileState extends State<Carttile> {
                     backgroundColor: Colors.red.shade800,
                     borderRadius: BorderRadius.circular(25),
                     onPressed: (context) {
-                      menuItem.deleteCart(widget.cart);
+                      menuItem.deleteCart(widget.cart, context);
                     },
                     icon: Icons.delete,
                   ),
@@ -148,7 +148,7 @@ class _CarttileState extends State<Carttile> {
                                   quantity: widget.cart.quantity,
                                   item: widget.cart.item,
                                   onDecrement: () {
-                                    menuItem.deleteCart(widget.cart);
+                                    menuItem.deleteCart(widget.cart, context);
                                   },
                                   onIncrement: () {
                                     menuItem.addCartItem(

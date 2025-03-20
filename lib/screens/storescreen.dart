@@ -1,21 +1,21 @@
 import 'package:coffee_app/data/store.dart';
+import 'package:coffee_app/data/storeprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 
 class Storescreen extends StatefulWidget {
-  final Store? selectedStore;
-  const Storescreen({super.key, required this.selectedStore});
+  const Storescreen({super.key});
 
   @override
   State<Storescreen> createState() => _StorescreenState();
 }
 
 class _StorescreenState extends State<Storescreen> {
-  Store? _selectedStore;
   late Future<List<Store>> _storesFuture;
-  List<Store>? _stores; // Menyimpan data toko untuk menghindari refresh
+  List<Store>? _stores;
   List<Store>? _filteredStores;
   final MapController _mapController = MapController();
   final TextEditingController _searchController = TextEditingController();
@@ -26,12 +26,15 @@ class _StorescreenState extends State<Storescreen> {
   void initState() {
     super.initState();
     _storesFuture = getStoresFromFirestore();
-    _selectedStore = widget.selectedStore;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_selectedStore != null) {
+      final storeProvider = Provider.of<Storeprovider>(context, listen: false);
+      if (storeProvider.selectedStore != null) {
         _mapController.move(
-          LatLng(_selectedStore!.latitude, _selectedStore!.longitude),
+          LatLng(
+            storeProvider.selectedStore!.latitude,
+            storeProvider.selectedStore!.longitude,
+          ),
           15, // Zoom level
         );
       }
@@ -87,8 +90,12 @@ class _StorescreenState extends State<Storescreen> {
               ),
               GestureDetector(
                 onTap: () {
+                  Provider.of<Storeprovider>(
+                    context,
+                    listen: false,
+                  ).setStore(store);
                   Navigator.pop(context);
-                  Navigator.pop(context, store);
+                  Navigator.pop(context);
                 },
                 child: Container(
                   padding: EdgeInsets.all(10),
@@ -139,6 +146,8 @@ class _StorescreenState extends State<Storescreen> {
 
   @override
   Widget build(BuildContext context) {
+    final storeProvider = Provider.of<Storeprovider>(context);
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
@@ -224,18 +233,17 @@ class _StorescreenState extends State<Storescreen> {
                               point: LatLng(store.latitude, store.longitude),
                               child: GestureDetector(
                                 onTap: () {
-                                  setState(() {
-                                    _selectedStore = store;
-                                    _mapController.move(
-                                      LatLng(store.latitude, store.longitude),
-                                      15, // Zoom level lebih dekat
-                                    );
-                                  });
+                                  storeProvider.setStore(store);
+                                  _mapController.move(
+                                    LatLng(store.latitude, store.longitude),
+                                    15, // Zoom level lebih dekat
+                                  );
                                 },
                                 child: Icon(
                                   Icons.location_pin,
                                   color:
-                                      _selectedStore?.id == store.id
+                                      storeProvider.selectedStore?.id ==
+                                              store.id
                                           ? Colors.green.shade800
                                           : Colors.red.shade800,
                                   size: 40,
@@ -285,17 +293,17 @@ class _StorescreenState extends State<Storescreen> {
                             store.address,
                             style: GoogleFonts.montserrat(fontSize: 14),
                           ),
-                          value: _selectedStore?.id == store.id,
+                          value: storeProvider.selectedStore?.id == store.id,
                           onChanged: (bool? value) {
                             setState(() {
                               if (value == true) {
-                                _selectedStore = store;
+                                storeProvider.setStore(store);
                                 _mapController.move(
                                   LatLng(store.latitude, store.longitude),
                                   15, // Zoom level lebih dekat
                                 );
                               } else {
-                                _selectedStore = null;
+                                storeProvider.clearStore();
                               }
                             });
                           },
@@ -315,7 +323,7 @@ class _StorescreenState extends State<Storescreen> {
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: GestureDetector(
           onTap: () {
-            if (_selectedStore == null) {
+            if (storeProvider.selectedStore == null) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   backgroundColor: Colors.red.shade800,
@@ -330,7 +338,7 @@ class _StorescreenState extends State<Storescreen> {
                 ),
               );
             } else {
-              confirmSelectedStore(context, _selectedStore!);
+              confirmSelectedStore(context, storeProvider.selectedStore!);
             }
           },
           child: Container(

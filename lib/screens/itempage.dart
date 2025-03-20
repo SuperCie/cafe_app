@@ -1,6 +1,5 @@
 import 'package:coffee_app/data/item.dart';
 import 'package:coffee_app/data/menuitem.dart';
-import 'package:coffee_app/models/components/myformfield.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -14,15 +13,7 @@ class Itempage extends StatefulWidget {
 }
 
 class _ItempageState extends State<Itempage> {
-  final noteController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-
-  @override
-  void dispose() {
-    noteController.dispose();
-    _scrollController.dispose();
-    super.dispose();
-  }
 
   // Selected Addons by Category
   Map<Addoncategory, addonItem?> selectedAddons = {
@@ -114,10 +105,7 @@ class _ItempageState extends State<Itempage> {
   @override
   Widget build(BuildContext context) {
     void addCartItem(Item item, Map<Addoncategory, addonItem?> selectedAddons) {
-      Provider.of<Menuitem>(
-        context,
-        listen: false,
-      ).userInputOptNote(noteController.text);
+      Provider.of<Menuitem>(context, listen: false);
       Navigator.pop(context);
 
       List<addonItem> currentlySelected = [];
@@ -189,52 +177,7 @@ class _ItempageState extends State<Itempage> {
                   physics: const NeverScrollableScrollPhysics(),
                   children: buildAddonList(widget.items.availableAddon),
                 ),
-                Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Note to restaurant',
-                        style: GoogleFonts.montserrat(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25),
-                          color: Theme.of(context).colorScheme.primary,
-                          border: Border.all(width: 1.5),
-                        ),
-                        child: Text(
-                          'Optional',
-                          style: GoogleFonts.montserrat(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Myformfield(
-                  controller: noteController,
-                  text: "Add your request (subject to restaurant's discretion)",
-                  validator: (value) {
-                    return null;
-                  },
-                  ontap: () {
-                    Future.delayed(Duration(milliseconds: 300), () {
-                      _scrollController.animateTo(
-                        _scrollController.position.maxScrollExtent,
-                        duration: Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
-                    });
-                  },
-                ),
+
                 SizedBox(height: 100),
               ],
             ),
