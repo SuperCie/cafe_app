@@ -3,15 +3,31 @@ import 'package:coffee_app/data/paymethprovider.dart';
 import 'package:coffee_app/data/storeprovider.dart';
 import 'package:coffee_app/models/components/containernopad.dart';
 import 'package:coffee_app/models/components/ordertile.dart';
+import 'package:coffee_app/screens/thankscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:slide_to_act/slide_to_act.dart';
 
 class Orderscreen extends StatelessWidget {
   const Orderscreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    void slidePay(BuildContext context) {
+      Navigator.push(
+        context,
+        PageRouteBuilder(
+          pageBuilder:
+              (context, animation, secondaryAnimation) => Thankscreen(),
+          transitionDuration: Duration(milliseconds: 500),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        ),
+      );
+    }
+
     return Consumer<Menuitem>(
       builder: (context, menuItem, child) {
         // get cart data
@@ -170,55 +186,21 @@ class Orderscreen extends StatelessWidget {
                       ),
                     ],
                   ),
-
-                  SizedBox(height: 100),
+                  SizedBox(height: 20),
+                  SlideAction(
+                    innerColor: Theme.of(context).colorScheme.onTertiary,
+                    outerColor: Colors.blue,
+                    sliderButtonIcon: Icon(Icons.arrow_forward_ios_rounded),
+                    text: 'Slide to Pay',
+                    sliderRotate: false,
+                    onSubmit: () {
+                      slidePay(context);
+                    },
+                  ),
                 ],
               ),
             ),
           ),
-          // bottomSheet: Padding(
-          //   padding: const EdgeInsets.all(12),
-          //   child: SliderButton(
-          //     action: () async {
-          //       /// Ketika geser sukses, tampilkan pop-up berhasil
-          //       showDialog(
-          //         context: context,
-          //         builder:
-          //             (context) => AlertDialog(
-          //               title: Text('Transaksi Berhasil!'),
-          //               content: Text('Pembayaran Anda telah dikonfirmasi.'),
-          //               actions: [
-          //                 TextButton(
-          //                   onPressed: () {
-          //                     Navigator.pop(context);
-          //                     Navigator.pop(context);
-          //                   },
-          //                   child: Text('OK'),
-          //                 ),
-          //               ],
-          //             ),
-          //       );
-          //     },
-          //     width: double.infinity,
-          //     shimmer: true, // Efek menyala
-          //     buttonSize: 60, // Ukuran tombol slider
-          //     alignLabel: Alignment.center,
-          //     backgroundColor: Colors.blue,
-          //     highlightedColor: Colors.blue.shade800,
-          //     baseColor: Colors.white,
-          //     buttonColor: Colors.white,
-          //     label: Text(
-          //       "Slide To Pay",
-          //       style: GoogleFonts.montserrat(
-          //         fontSize: 18,
-          //         fontWeight: FontWeight.bold,
-          //       ),
-          //     ),
-          //     icon: Center(
-          //       child: Icon(Icons.arrow_forward, color: Colors.blue, size: 30),
-          //     ),
-          //   ),
-          // ),
         );
       },
     );

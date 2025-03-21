@@ -7,6 +7,7 @@ ThemeData lightTheme = ThemeData(
     primary: Colors.white, //appbar atau container
     secondary: Colors.black, // container divider border
     tertiary: Colors.grey.shade800, // back button
+    onTertiary: Colors.white, //slide button
   ),
 );
 
@@ -17,5 +18,6 @@ ThemeData darkTheme = ThemeData(
     primary: Colors.grey.shade700,
     secondary: Colors.white,
     tertiary: Colors.white,
+    onTertiary: Colors.grey.shade900,
   ),
 );
