@@ -5,14 +5,25 @@ class Myformfield extends StatelessWidget {
   final String text;
   void Function()? ontap;
   final String? Function(String?)? validator;
- final Function(String)? onchanged;
+  final Function(String)? onchanged;
+  final bool? readOnly;
+  final Widget? prefixIcon;
+  final bool? obscureText;
+  final Widget? suffixIcon;
+  final TextStyle? labelStyle;
   Myformfield({
     super.key,
+    this.labelStyle,
+    this.suffixIcon,
+    this.prefixIcon,
+    this.readOnly,
     required this.controller,
     required this.text,
     required this.validator,
-    required this.ontap,
-    this.onchanged
+    this.ontap,
+    this.onchanged,
+    this.obscureText,
+
   });
 
   @override
@@ -22,6 +33,8 @@ class Myformfield extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         decoration: InputDecoration(
+          
+          suffixIcon: suffixIcon,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(
@@ -29,8 +42,11 @@ class Myformfield extends StatelessWidget {
               color: Theme.of(context).colorScheme.secondary,
             ),
           ),
+
+          fillColor: Theme.of(context).colorScheme.primary,
           labelText: text,
           filled: true,
+          prefixIcon: prefixIcon,
         ),
         validator: validator,
         onTap: ontap,

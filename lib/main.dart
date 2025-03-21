@@ -1,3 +1,5 @@
+import 'package:coffee_app/autentication/loginscreen.dart';
+import 'package:coffee_app/autentication/registscreen.dart';
 import 'package:coffee_app/data/menuitem.dart';
 import 'package:coffee_app/data/paymethprovider.dart';
 import 'package:coffee_app/data/storeprovider.dart';
@@ -30,7 +32,7 @@ class CoffeeApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Homescreen(),
+      home: Loginscreen(),
       theme: Provider.of<Themerepo>(context).themeData,
     );
   }

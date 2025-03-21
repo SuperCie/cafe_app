@@ -8,6 +8,7 @@ ThemeData lightTheme = ThemeData(
     secondary: Colors.black, // container divider border
     tertiary: Colors.grey.shade800, // back button
     onTertiary: Colors.white, //slide button
+    onTertiaryContainer: Color(0xFF6B8E23),
   ),
 );
 
@@ -19,5 +20,6 @@ ThemeData darkTheme = ThemeData(
     secondary: Colors.white,
     tertiary: Colors.white,
     onTertiary: Colors.grey.shade900,
+    onTertiaryContainer: Color(0xFF556B2F),
   ),
 );
