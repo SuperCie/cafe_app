@@ -7,7 +7,6 @@ class Profilescreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void logout() {}
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,

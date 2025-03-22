@@ -37,6 +37,7 @@ class Sliverappbarmodel extends StatelessWidget {
 
     return SliverAppBar(
       expandedHeight: 100,
+      automaticallyImplyLeading: false,
       floating: false,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(

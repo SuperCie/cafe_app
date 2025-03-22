@@ -1,15 +1,31 @@
 import 'package:coffee_app/models/components/tilemodel.dart';
 import 'package:coffee_app/models/theme/themerepo.dart';
+import 'package:coffee_app/screens/deletescreen.dart';
+import 'package:coffee_app/services/authservice.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-class Settingscreen extends StatelessWidget {
-  const Settingscreen({super.key});
+class Settingscreen extends StatefulWidget {
+  Settingscreen({super.key});
+
+  @override
+  State<Settingscreen> createState() => _SettingscreenState();
+}
+
+class _SettingscreenState extends State<Settingscreen> {
+  final Authserviceclass _auth = Authserviceclass();
 
   @override
   Widget build(BuildContext context) {
+    void deleteAcc(BuildContext context) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Deletescreen()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
@@ -58,11 +74,15 @@ class Settingscreen extends StatelessWidget {
             ),
             Divider(thickness: 1.0),
             Tilemodel(
+              ontap: () {
+                _auth.userLogOut(context);
+              },
               text: 'Sign Out',
               imagePath: 'assets/icons/signoutacc.png',
             ),
             Divider(thickness: 1.0),
             Tilemodel(
+              ontap: () => deleteAcc(context),
               text: 'Delete Account',
               imagePath: 'assets/icons/deleteacc.png',
             ),

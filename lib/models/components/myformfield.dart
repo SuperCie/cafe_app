@@ -8,9 +8,9 @@ class Myformfield extends StatelessWidget {
   final Function(String)? onchanged;
   final bool? readOnly;
   final Widget? prefixIcon;
-  final bool? obscureText;
   final Widget? suffixIcon;
   final TextStyle? labelStyle;
+  final bool obscureText;
   Myformfield({
     super.key,
     this.labelStyle,
@@ -19,11 +19,10 @@ class Myformfield extends StatelessWidget {
     this.readOnly,
     required this.controller,
     required this.text,
-    required this.validator,
+    this.validator,
     this.ontap,
     this.onchanged,
-    this.obscureText,
-
+    this.obscureText = false,
   });
 
   @override
@@ -31,9 +30,9 @@ class Myformfield extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: TextFormField(
+        obscureText: obscureText,
         controller: controller,
         decoration: InputDecoration(
-          
           suffixIcon: suffixIcon,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
