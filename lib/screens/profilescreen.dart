@@ -1,4 +1,6 @@
 import 'package:coffee_app/models/components/tilemodel.dart';
+import 'package:coffee_app/screens/historytrans.dart';
+import 'package:coffee_app/screens/personalscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -7,6 +9,19 @@ class Profilescreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void switchPersonalPage() {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Personalscreen()),
+      );
+    }
+
+    void switchHistoryPage() {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Historytrans()),
+      );
+    }
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -32,12 +47,14 @@ class Profilescreen extends StatelessWidget {
         child: ListView(
           children: [
             Tilemodel(
+              ontap: switchPersonalPage,
               text: 'Personal',
               imagePath: 'assets/icons/personicon.png',
             ),
             Divider(thickness: 1.0),
 
             Tilemodel(
+              ontap: switchHistoryPage,
               text: 'Transaction History',
               imagePath: 'assets/icons/transactionicon.png',
             ),

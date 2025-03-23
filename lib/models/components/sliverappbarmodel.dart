@@ -10,6 +10,8 @@ class Sliverappbarmodel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+
     // Navigate Function
     // ignore: non_constant_identifier_names
     void NavigateSettings() {
@@ -64,7 +66,7 @@ class Sliverappbarmodel extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      ' HI CHARLES PUTRA👋',
+                      ' HI, CHARLES PUTRA👋',
                       style: GoogleFonts.montserrat(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,

@@ -156,4 +156,23 @@ class Authserviceclass {
   Stream<User?> get user {
     return _auth.authStateChanges();
   }
+
+  // untuk mengambil data user dari firestore
+  Future<Map<String, dynamic>?> getUserData(
+    String uid,
+    BuildContext context,
+  ) async {
+    try {
+      DocumentSnapshot snapshot =
+          await _firestore.collection('users').doc(uid).get();
+      if (snapshot.exists) {
+        return snapshot.data() as Map<String, dynamic>;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      displayError(context, e.toString());
+      return null;
+    }
+  }
 }
