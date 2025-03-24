@@ -1,3 +1,4 @@
+import 'package:coffee_app/data/datauser/userprovider.dart';
 import 'package:coffee_app/data/menuitem.dart';
 import 'package:coffee_app/data/paymethprovider.dart';
 import 'package:coffee_app/data/storeprovider.dart';
@@ -9,8 +10,20 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_to_act/slide_to_act.dart';
 
-class Orderscreen extends StatelessWidget {
+class Orderscreen extends StatefulWidget {
   const Orderscreen({super.key});
+
+  @override
+  State<Orderscreen> createState() => _OrderscreenState();
+}
+
+class _OrderscreenState extends State<Orderscreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Provider.of<Userprovider>(context, listen: false).fetchUserData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,15 +48,42 @@ class Orderscreen extends StatelessWidget {
         final selectedStore = context.watch<Storeprovider>().selectedStore;
         final selectedPayment =
             context.watch<Paymethprovider>().selectedMethods;
+        final userData =
+            Provider.of<Userprovider>(context, listen: false).userData;
         return Scaffold(
-          appBar: AppBar(elevation: 0),
+          appBar: AppBar(
+            elevation: 0,
+            title: Text(
+              'Order Summary',
+              style: GoogleFonts.montserrat(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+          ),
           backgroundColor: Theme.of(context).colorScheme.surface,
+
           body: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Row(
+                    children: [
+                      Icon(Icons.person),
+                      SizedBox(width: 10),
+                      Text(
+                        "${userData?['name']}".toUpperCase(),
+                        style: GoogleFonts.montserrat(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: 20),
                   Row(
                     children: [
                       Icon(Icons.store_mall_directory_outlined),
@@ -59,7 +99,7 @@ class Orderscreen extends StatelessWidget {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    selectedStore!.name,
+                    "-> ${selectedStore!.name}",
                     style: GoogleFonts.montserrat(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

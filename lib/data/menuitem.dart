@@ -553,4 +553,5 @@ class Menuitem extends ChangeNotifier {
       Provider.of<Paymethprovider>(context, listen: false).clearMethod();
     }
   }
+
 }

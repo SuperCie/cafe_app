@@ -1,3 +1,4 @@
+import 'package:coffee_app/data/datauser/userprovider.dart';
 import 'package:coffee_app/data/menuitem.dart';
 import 'package:coffee_app/data/storeprovider.dart';
 import 'package:coffee_app/models/components/sliverappbarmodel.dart';
@@ -16,26 +17,45 @@ class Homescreen extends StatefulWidget {
 
 class _HomescreenState extends State<Homescreen> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Provider.of<Userprovider>(context, listen: false).fetchUserData();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final userCart = context.watch<Menuitem>();
     final selectedStore = Provider.of<Storeprovider>(context).selectedStore;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: CustomScrollView(
-        slivers: [
-          Sliverappbarmodel(),
-          SliverPersistentHeader(delegate: Slivercategorybar(), floating: true),
-          Consumer<Menuitem>(
-            builder: (context, menuItem, child) {
-              final items = menuItem.selectedItem;
-              return SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  return Tileitem(items: items[index]);
-                }, childCount: items.length),
-              );
-            },
-          ),
-        ],
+      body: Consumer<Userprovider>(
+        builder: (context, userProvider, child) {
+          if (userProvider.userData == null) {
+            // Tampilkan loading indicator jika data belum diambil
+            return Center(child: CircularProgressIndicator());
+          }
+
+          return CustomScrollView(
+            slivers: [
+              Sliverappbarmodel(),
+              SliverPersistentHeader(
+                delegate: Slivercategorybar(),
+                floating: true,
+              ),
+              Consumer<Menuitem>(
+                builder: (context, menuItem, child) {
+                  final items = menuItem.selectedItem;
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      return Tileitem(items: items[index]);
+                    }, childCount: items.length),
+                  );
+                },
+              ),
+            ],
+          );
+        },
       ),
 
       floatingActionButton:

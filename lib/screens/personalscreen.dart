@@ -1,6 +1,8 @@
+import 'package:coffee_app/data/datauser/userprovider.dart';
 import 'package:coffee_app/models/components/mybutton.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class Personalscreen extends StatefulWidget {
   const Personalscreen({super.key});
@@ -11,7 +13,15 @@ class Personalscreen extends StatefulWidget {
 
 class _PersonalscreenState extends State<Personalscreen> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Provider.of<Userprovider>(context, listen: false).fetchUserData();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final userData = Provider.of<Userprovider>(context, listen: false).userData;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
@@ -34,7 +44,7 @@ class _PersonalscreenState extends State<Personalscreen> {
 
         height: MediaQuery.of(context).size.height,
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(vertical: 20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -43,7 +53,7 @@ class _PersonalscreenState extends State<Personalscreen> {
                   ListTile(
                     leading: Icon(Icons.person),
                     title: Text(
-                      "CHARLES PUTRA",
+                      "${userData?['name']}".toUpperCase(),
                       style: GoogleFonts.montserrat(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -55,7 +65,7 @@ class _PersonalscreenState extends State<Personalscreen> {
                   ListTile(
                     leading: Icon(Icons.email_outlined),
                     title: Text(
-                      "CHARLESPUTRA12@GMAIL.COM",
+                      userData?['email'],
                       style: GoogleFonts.montserrat(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -68,7 +78,7 @@ class _PersonalscreenState extends State<Personalscreen> {
                   ListTile(
                     leading: Icon(Icons.calendar_month_outlined),
                     title: Text(
-                      "25 April 2003",
+                      userData?['datebirth'],
                       style: GoogleFonts.montserrat(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

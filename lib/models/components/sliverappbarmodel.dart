@@ -1,16 +1,32 @@
+import 'package:coffee_app/data/datauser/userprovider.dart';
 import 'package:coffee_app/models/components/containerappbar.dart';
 import 'package:coffee_app/screens/inboxscreen.dart';
 import 'package:coffee_app/screens/profilescreen.dart';
 import 'package:coffee_app/screens/settingscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
-class Sliverappbarmodel extends StatelessWidget {
+class Sliverappbarmodel extends StatefulWidget {
   const Sliverappbarmodel({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<Sliverappbarmodel> createState() => _SliverappbarmodelState();
+}
 
+class _SliverappbarmodelState extends State<Sliverappbarmodel> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      Provider.of<Userprovider>(context, listen: false).fetchUserData();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final userData = Provider.of<Userprovider>(context, listen: false).userData;
 
     // Navigate Function
     // ignore: non_constant_identifier_names
@@ -66,7 +82,7 @@ class Sliverappbarmodel extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      ' HI, CHARLES PUTRA👋',
+                      "HI, ${userData?['name']}👋".toUpperCase(),
                       style: GoogleFonts.montserrat(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,

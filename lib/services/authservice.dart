@@ -3,8 +3,10 @@ import 'package:coffee_app/autentication/authgate.dart';
 import 'package:coffee_app/autentication/helper/displayerror.dart';
 import 'package:coffee_app/autentication/helper/displayproceed.dart';
 import 'package:coffee_app/autentication/helper/scaffoldmessager.dart';
+import 'package:coffee_app/data/datauser/userprovider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Authserviceclass {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -36,6 +38,7 @@ class Authserviceclass {
         ); // artinya kalau datanya itu tidak kosong, kita buatkan dia kedalam database dengan nama collectionnya itu Users.
         // terus disimpan berdasarkan uid unik masing" dan data yang akan disimpan berupa nama, email, tanggal lahir dan kapan dibuat
         successMsg(context, 'Your account successfuly registered');
+        await Future.delayed(Duration(milliseconds: 500));
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => Authgate()),
@@ -59,6 +62,7 @@ class Authserviceclass {
         password: password,
       );
       successMsg(context, 'Welcome Back, You successfuly signed in');
+      await Future.delayed(Duration(milliseconds: 500));
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => Authgate()),
@@ -85,7 +89,7 @@ class Authserviceclass {
         confirmTap: () async {
           Navigator.pop(context);
           await _auth.signOut();
-
+          Provider.of<Userprovider>(context, listen: false).clearUserData();
           successMsg(context, 'Signed out successfully. See you again!');
           Navigator.pushReplacement(
             context,
@@ -135,6 +139,7 @@ class Authserviceclass {
 
             // Hapus akun pengguna dari Firebase Auth
             await user.delete();
+            Provider.of<Userprovider>(context, listen: false).clearUserData();
 
             // pesan sukses :
             successMsg(context, 'Your account has been deleted');
@@ -175,4 +180,5 @@ class Authserviceclass {
       return null;
     }
   }
+
 }
