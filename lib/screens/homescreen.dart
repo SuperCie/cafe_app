@@ -1,3 +1,4 @@
+import 'package:coffee_app/data/cart.dart';
 import 'package:coffee_app/data/database/userprovider.dart';
 import 'package:coffee_app/data/menuitem.dart';
 import 'package:coffee_app/data/storeprovider.dart';
@@ -32,7 +33,6 @@ class _HomescreenState extends State<Homescreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userCart = context.watch<Menuitem>();
     final selectedStore = Provider.of<Storeprovider>(context).selectedStore;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -65,22 +65,27 @@ class _HomescreenState extends State<Homescreen> {
         },
       ),
 
-      floatingActionButton:
-          userCart.cart.isNotEmpty
-              ? FloatingActionButton(
-                backgroundColor: Colors.green.shade800,
-                child: Icon(Icons.shopping_bag_rounded, color: Colors.black),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => Cartscreen(selectedStore: selectedStore),
-                    ),
-                  );
-                },
-              )
-              : null,
+      floatingActionButton: StreamBuilder<List<Cart>>(
+        stream: Provider.of<Menuitem>(context).getCartStream(userId),
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+            return FloatingActionButton(
+              backgroundColor: Colors.green.shade800,
+              child: Icon(Icons.shopping_bag_rounded, color: Colors.black),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => Cartscreen(selectedStore: selectedStore),
+                  ),
+                );
+              },
+            );
+          }
+          return const SizedBox(); // Return widget kosong
+        },
+      ),
     );
   }
 }

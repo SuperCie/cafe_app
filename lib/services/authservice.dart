@@ -76,6 +76,7 @@ class Authserviceclass {
 
   // LOGOUT
   Future<void> userLogOut(BuildContext context) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
     try {
       displayProceed(
         context: context,
@@ -91,6 +92,10 @@ class Authserviceclass {
           Navigator.pop(context);
           await _auth.signOut();
           Provider.of<Userprovider>(context, listen: false).clearUserData();
+          Provider.of<Menuitem>(
+            context,
+            listen: false,
+          ).deleteAllCart(context, userId);
           successMsg(context, 'Signed out successfully. See you again!');
           Navigator.pushReplacement(
             context,
@@ -137,7 +142,6 @@ class Authserviceclass {
             Navigator.pop(context);
             // Hapus data pengguna dari Firestore
             await _firestore.collection('users').doc(user.uid).delete();
-
             // Hapus akun pengguna dari Firebase Auth
             await user.delete();
             Provider.of<Userprovider>(context, listen: false).clearUserData();

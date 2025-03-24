@@ -696,18 +696,47 @@ class Menuitem extends ChangeNotifier {
   }
 
   Future<void> fetchCartFromFirestore(String? uid, BuildContext context) async {
-    if (uid == null) return;
+    if (uid == null) {
+      _cart = [];
+      isloading = false;
+      notifyListeners();
+      return;
+    }
+    try {
+      final QuerySnapshot cartSnapshot =
+          await _itemdb.collection('users').doc(uid).collection('cart').get();
+      _cart =
+          cartSnapshot.docs.map((doc) {
+            return Cart.fromMap(doc.data() as Map<String, dynamic>);
+          }).toList();
 
-    final QuerySnapshot cartSnapshot =
-        await _itemdb.collection('users').doc(uid).collection('cart').get();
+      isloading = false;
+      notifyListeners();
+      _checkCartEmpty(context);
+    } catch (e) {
+      _cart = [];
+      isloading = false;
+      notifyListeners();
+    }
+  }
 
-    _cart =
-        cartSnapshot.docs.map((doc) {
-          return Cart.fromMap(doc.data() as Map<String, dynamic>);
-        }).toList();
-    _checkCartEmpty(context);
-    isloading = false;
-    notifyListeners();
+  // method untuk memeriksa cart secara realtime
+  Stream<List<Cart>> getCartStream(String? uid) {
+    if (uid == null) return Stream.value([]);
+
+    return _itemdb
+        .collection('users')
+        .doc(uid)
+        .collection('cart')
+        .snapshots()
+        .map(
+          (snapshot) =>
+              snapshot.docs
+                  .map(
+                    (doc) => Cart.fromMap(doc.data() as Map<String, dynamic>),
+                  )
+                  .toList(),
+        );
   }
 
   // add to cart
