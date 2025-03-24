@@ -3,7 +3,8 @@ import 'package:coffee_app/autentication/authgate.dart';
 import 'package:coffee_app/autentication/helper/displayerror.dart';
 import 'package:coffee_app/autentication/helper/displayproceed.dart';
 import 'package:coffee_app/autentication/helper/scaffoldmessager.dart';
-import 'package:coffee_app/data/datauser/userprovider.dart';
+import 'package:coffee_app/data/database/userprovider.dart';
+import 'package:coffee_app/data/menuitem.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -180,5 +181,4 @@ class Authserviceclass {
       return null;
     }
   }
-
 }

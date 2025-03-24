@@ -10,6 +10,7 @@ import 'package:coffee_app/models/components/myformfield.dart';
 import 'package:coffee_app/screens/orderscreen.dart';
 import 'package:coffee_app/screens/paymetscreen.dart';
 import 'package:coffee_app/screens/storescreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,7 +19,7 @@ import 'package:provider/provider.dart';
 class Cartscreen extends StatefulWidget {
   final Store? selectedStore;
   final Paymeths? selectedMethods;
-  const Cartscreen({Key? key, this.selectedStore, this.selectedMethods})
+  const Cartscreen({Key? key, this.selectedStore, this.selectedMethods,})
     : super(key: key);
 
   @override
@@ -26,6 +27,7 @@ class Cartscreen extends StatefulWidget {
 }
 
 class _CartscreenState extends State<Cartscreen> {
+  final userId = FirebaseAuth.instance.currentUser?.uid;
   final reNoteController = TextEditingController();
   final _scrollController = ScrollController();
 
@@ -199,7 +201,7 @@ class _CartscreenState extends State<Cartscreen> {
                         ],
                       ),
                       TextButton(
-                        onPressed: () => menuItem.deleteAllCart(context),
+                        onPressed: () => menuItem.deleteAllCart(context, userId ),
                         child: Text(
                           'Delete All',
                           style: GoogleFonts.montserrat(

@@ -1,6 +1,7 @@
 import 'package:coffee_app/data/cart.dart';
 import 'package:coffee_app/data/menuitem.dart';
 import 'package:coffee_app/models/components/quantitymodel.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,15 @@ class Carttile extends StatefulWidget {
 }
 
 class _CarttileState extends State<Carttile> {
+  final userId = FirebaseAuth.instance.currentUser?.uid;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Provider.of<Menuitem>(context, listen: false).fetchCartFromFirestore(userId, context);
+  }
+
   @override
   Widget build(BuildContext context) {
     void openSlidable(BuildContext context) {
@@ -40,7 +50,7 @@ class _CarttileState extends State<Carttile> {
                     backgroundColor: Colors.red.shade800,
                     borderRadius: BorderRadius.circular(25),
                     onPressed: (context) {
-                      menuItem.deleteCart(widget.cart, context);
+                      menuItem.deleteCart(widget.cart, context, userId);
                     },
                     icon: Icons.delete,
                   ),
@@ -148,12 +158,17 @@ class _CarttileState extends State<Carttile> {
                                   quantity: widget.cart.quantity,
                                   item: widget.cart.item,
                                   onDecrement: () {
-                                    menuItem.deleteCart(widget.cart, context);
+                                    menuItem.deleteCart(
+                                      widget.cart,
+                                      context,
+                                      userId,
+                                    );
                                   },
                                   onIncrement: () {
                                     menuItem.addCartItem(
                                       widget.cart.item,
                                       widget.cart.selectedAddon,
+                                      userId,
                                     );
                                   },
                                 ),

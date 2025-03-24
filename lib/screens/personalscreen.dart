@@ -1,4 +1,4 @@
-import 'package:coffee_app/data/datauser/userprovider.dart';
+import 'package:coffee_app/data/database/userprovider.dart';
 import 'package:coffee_app/models/components/mybutton.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

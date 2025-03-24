@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coffee_app/data/cart.dart';
 import 'package:coffee_app/data/item.dart';
 import 'package:coffee_app/data/paymethprovider.dart';
@@ -5,14 +6,17 @@ import 'package:coffee_app/data/paymeths.dart';
 import 'package:coffee_app/data/store.dart';
 import 'package:coffee_app/data/storeprovider.dart';
 import 'package:collection/collection.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class Menuitem extends ChangeNotifier {
+  final FirebaseFirestore _itemdb = FirebaseFirestore.instance;
   final List<Item> _items = [
     // Kategori Coffee
     Item(
+      id: 001,
       name: 'Kopi Gula Merah',
       description: 'Kopi dengan rasa manis dan sedikit asam dari gula merah.',
       price: 23000,
@@ -20,33 +24,49 @@ class Menuitem extends ChangeNotifier {
       imagePath: 'assets/images/gulamerah.jpeg',
       availableAddon: [
         addonItem(
+          id: 01,
           name: 'Low Fat Milk',
           price: 5000,
           category: Addoncategory.Milk,
         ),
-        addonItem(name: 'Soya Milk', price: 8000, category: Addoncategory.Milk),
-        addonItem(name: 'Oat Milk', price: 8000, category: Addoncategory.Milk),
         addonItem(
+          id: 02,
+          name: 'Soya Milk',
+          price: 8000,
+          category: Addoncategory.Milk,
+        ),
+        addonItem(
+          id: 03,
+          name: 'Oat Milk',
+          price: 8000,
+          category: Addoncategory.Milk,
+        ),
+        addonItem(
+          id: 04,
           name: 'Extra Rum',
           price: 6000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 05,
           name: 'Extra Es Krim',
           price: 7000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 06,
           name: 'Extra Espresso',
           price: 5000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 07,
           name: 'Extra Regal',
           price: 4000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 08,
           name: 'Extra Saus Caramel',
           price: 8000,
           category: Addoncategory.Special,
@@ -54,6 +74,7 @@ class Menuitem extends ChangeNotifier {
       ],
     ),
     Item(
+      id: 002,
       name: 'Kopi Rum',
       description: 'Kopi dengan tambahan rum yang memberi aroma khas.',
       price: 21000,
@@ -61,33 +82,49 @@ class Menuitem extends ChangeNotifier {
       imagePath: 'assets/images/kopirum.jpeg',
       availableAddon: [
         addonItem(
+          id: 01,
           name: 'Low Fat Milk',
           price: 5000,
           category: Addoncategory.Milk,
         ),
-        addonItem(name: 'Soya Milk', price: 8000, category: Addoncategory.Milk),
-        addonItem(name: 'Oat Milk', price: 8000, category: Addoncategory.Milk),
         addonItem(
+          id: 02,
+          name: 'Soya Milk',
+          price: 8000,
+          category: Addoncategory.Milk,
+        ),
+        addonItem(
+          id: 03,
+          name: 'Oat Milk',
+          price: 8000,
+          category: Addoncategory.Milk,
+        ),
+        addonItem(
+          id: 04,
           name: 'Extra Rum',
           price: 6000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 05,
           name: 'Extra Es Krim',
           price: 7000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 06,
           name: 'Extra Espresso',
           price: 5000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 07,
           name: 'Extra Regal',
           price: 4000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 08,
           name: 'Extra Saus Caramel',
           price: 8000,
           category: Addoncategory.Special,
@@ -95,6 +132,7 @@ class Menuitem extends ChangeNotifier {
       ],
     ),
     Item(
+      id: 003,
       name: 'Kopi Hitam',
       description: 'Kopi hitam pekat tanpa tambahan apapun.',
       price: 18000,
@@ -102,33 +140,49 @@ class Menuitem extends ChangeNotifier {
       imagePath: 'assets/images/kopihitam.jpeg',
       availableAddon: [
         addonItem(
+          id: 01,
           name: 'Low Fat Milk',
           price: 5000,
           category: Addoncategory.Milk,
         ),
-        addonItem(name: 'Soya Milk', price: 8000, category: Addoncategory.Milk),
-        addonItem(name: 'Oat Milk', price: 8000, category: Addoncategory.Milk),
         addonItem(
+          id: 02,
+          name: 'Soya Milk',
+          price: 8000,
+          category: Addoncategory.Milk,
+        ),
+        addonItem(
+          id: 03,
+          name: 'Oat Milk',
+          price: 8000,
+          category: Addoncategory.Milk,
+        ),
+        addonItem(
+          id: 04,
           name: 'Extra Rum',
           price: 6000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 05,
           name: 'Extra Es Krim',
           price: 7000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 06,
           name: 'Extra Espresso',
           price: 5000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 07,
           name: 'Extra Regal',
           price: 4000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 08,
           name: 'Extra Saus Caramel',
           price: 8000,
           category: Addoncategory.Special,
@@ -136,6 +190,7 @@ class Menuitem extends ChangeNotifier {
       ],
     ),
     Item(
+      id: 004,
       name: 'Cappucino',
       description: 'Kopi dengan susu berbusa dan sedikit rasa pahit.',
       price: 20000,
@@ -143,33 +198,49 @@ class Menuitem extends ChangeNotifier {
       imagePath: 'assets/images/cappucino.jpeg',
       availableAddon: [
         addonItem(
+          id: 01,
           name: 'Low Fat Milk',
           price: 5000,
           category: Addoncategory.Milk,
         ),
-        addonItem(name: 'Soya Milk', price: 8000, category: Addoncategory.Milk),
-        addonItem(name: 'Oat Milk', price: 8000, category: Addoncategory.Milk),
         addonItem(
+          id: 02,
+          name: 'Soya Milk',
+          price: 8000,
+          category: Addoncategory.Milk,
+        ),
+        addonItem(
+          id: 03,
+          name: 'Oat Milk',
+          price: 8000,
+          category: Addoncategory.Milk,
+        ),
+        addonItem(
+          id: 04,
           name: 'Extra Rum',
           price: 6000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 05,
           name: 'Extra Es Krim',
           price: 7000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 06,
           name: 'Extra Espresso',
           price: 5000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 07,
           name: 'Extra Regal',
           price: 4000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 08,
           name: 'Extra Saus Caramel',
           price: 8000,
           category: Addoncategory.Special,
@@ -177,6 +248,7 @@ class Menuitem extends ChangeNotifier {
       ],
     ),
     Item(
+      id: 005,
       name: 'Kopi Soe Lowfat',
       description: 'Kopi rendah lemak dengan rasa ringan.',
       price: 20000,
@@ -184,33 +256,49 @@ class Menuitem extends ChangeNotifier {
       imagePath: 'assets/images/lowfatkopi.jpeg',
       availableAddon: [
         addonItem(
+          id: 01,
           name: 'Low Fat Milk',
           price: 5000,
           category: Addoncategory.Milk,
         ),
-        addonItem(name: 'Soya Milk', price: 8000, category: Addoncategory.Milk),
-        addonItem(name: 'Oat Milk', price: 8000, category: Addoncategory.Milk),
         addonItem(
+          id: 02,
+          name: 'Soya Milk',
+          price: 8000,
+          category: Addoncategory.Milk,
+        ),
+        addonItem(
+          id: 03,
+          name: 'Oat Milk',
+          price: 8000,
+          category: Addoncategory.Milk,
+        ),
+        addonItem(
+          id: 04,
           name: 'Extra Rum',
           price: 6000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 05,
           name: 'Extra Es Krim',
           price: 7000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 06,
           name: 'Extra Espresso',
           price: 5000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 07,
           name: 'Extra Regal',
           price: 4000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 08,
           name: 'Extra Saus Caramel',
           price: 8000,
           category: Addoncategory.Special,
@@ -218,6 +306,7 @@ class Menuitem extends ChangeNotifier {
       ],
     ),
     Item(
+      id: 006,
       name: 'Kopi Caramel',
       description: 'Kopi dengan tambahan rasa caramel manis.',
       price: 25000,
@@ -225,42 +314,58 @@ class Menuitem extends ChangeNotifier {
       imagePath: 'assets/images/caramel.jpeg',
       availableAddon: [
         addonItem(
+          id: 01,
           name: 'Low Fat Milk',
           price: 5000,
           category: Addoncategory.Milk,
         ),
-        addonItem(name: 'Soya Milk', price: 8000, category: Addoncategory.Milk),
-        addonItem(name: 'Oat Milk', price: 8000, category: Addoncategory.Milk),
         addonItem(
+          id: 02,
+          name: 'Soya Milk',
+          price: 8000,
+          category: Addoncategory.Milk,
+        ),
+        addonItem(
+          id: 03,
+          name: 'Oat Milk',
+          price: 8000,
+          category: Addoncategory.Milk,
+        ),
+        addonItem(
+          id: 04,
           name: 'Extra Rum',
           price: 6000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 05,
           name: 'Extra Es Krim',
           price: 7000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 06,
           name: 'Extra Espresso',
           price: 5000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 07,
           name: 'Extra Regal',
           price: 4000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 08,
           name: 'Extra Saus Caramel',
           price: 8000,
           category: Addoncategory.Special,
         ),
       ],
     ),
-
     // Kategori Signature
     Item(
+      id: 007,
       name: 'Kopi Soya',
       description: 'Kopi dengan susu kedelai yang lembut.',
       price: 23000,
@@ -268,33 +373,49 @@ class Menuitem extends ChangeNotifier {
       imagePath: 'assets/images/kopisoya.jpeg',
       availableAddon: [
         addonItem(
+          id: 01,
           name: 'Low Fat Milk',
           price: 5000,
           category: Addoncategory.Milk,
         ),
-        addonItem(name: 'Soya Milk', price: 8000, category: Addoncategory.Milk),
-        addonItem(name: 'Oat Milk', price: 8000, category: Addoncategory.Milk),
         addonItem(
+          id: 02,
+          name: 'Soya Milk',
+          price: 8000,
+          category: Addoncategory.Milk,
+        ),
+        addonItem(
+          id: 03,
+          name: 'Oat Milk',
+          price: 8000,
+          category: Addoncategory.Milk,
+        ),
+        addonItem(
+          id: 04,
           name: 'Extra Rum',
           price: 6000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 05,
           name: 'Extra Es Krim',
           price: 7000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 06,
           name: 'Extra Espresso',
           price: 5000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 07,
           name: 'Extra Regal',
           price: 4000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 08,
           name: 'Extra Saus Caramel',
           price: 8000,
           category: Addoncategory.Special,
@@ -302,6 +423,7 @@ class Menuitem extends ChangeNotifier {
       ],
     ),
     Item(
+      id: 008,
       name: 'Cokelat Soya',
       description: 'Cokelat dengan susu kedelai yang creamy.',
       price: 23000,
@@ -309,42 +431,58 @@ class Menuitem extends ChangeNotifier {
       imagePath: 'assets/images/coklatsoya.jpeg',
       availableAddon: [
         addonItem(
+          id: 01,
           name: 'Low Fat Milk',
           price: 5000,
           category: Addoncategory.Milk,
         ),
-        addonItem(name: 'Soya Milk', price: 8000, category: Addoncategory.Milk),
-        addonItem(name: 'Oat Milk', price: 8000, category: Addoncategory.Milk),
         addonItem(
+          id: 02,
+          name: 'Soya Milk',
+          price: 8000,
+          category: Addoncategory.Milk,
+        ),
+        addonItem(
+          id: 03,
+          name: 'Oat Milk',
+          price: 8000,
+          category: Addoncategory.Milk,
+        ),
+        addonItem(
+          id: 04,
           name: 'Extra Rum',
           price: 6000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 05,
           name: 'Extra Es Krim',
           price: 7000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 06,
           name: 'Extra Espresso',
           price: 5000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 07,
           name: 'Extra Regal',
           price: 4000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 08,
           name: 'Extra Saus Caramel',
           price: 8000,
           category: Addoncategory.Special,
         ),
       ],
     ),
-
     // Kategori Non-Coffee
     Item(
+      id: 009,
       name: 'Matcha Latte',
       description: 'Minuman dengan rasa matcha yang lembut dan creamy.',
       price: 23000,
@@ -352,33 +490,49 @@ class Menuitem extends ChangeNotifier {
       imagePath: 'assets/images/matcha.jpeg',
       availableAddon: [
         addonItem(
+          id: 01,
           name: 'Low Fat Milk',
           price: 5000,
           category: Addoncategory.Milk,
         ),
-        addonItem(name: 'Soya Milk', price: 8000, category: Addoncategory.Milk),
-        addonItem(name: 'Oat Milk', price: 8000, category: Addoncategory.Milk),
         addonItem(
+          id: 02,
+          name: 'Soya Milk',
+          price: 8000,
+          category: Addoncategory.Milk,
+        ),
+        addonItem(
+          id: 03,
+          name: 'Oat Milk',
+          price: 8000,
+          category: Addoncategory.Milk,
+        ),
+        addonItem(
+          id: 04,
           name: 'Extra Rum',
           price: 6000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 05,
           name: 'Extra Es Krim',
           price: 7000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 06,
           name: 'Extra Espresso',
           price: 5000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 07,
           name: 'Extra Regal',
           price: 4000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 08,
           name: 'Extra Saus Caramel',
           price: 8000,
           category: Addoncategory.Special,
@@ -386,6 +540,7 @@ class Menuitem extends ChangeNotifier {
       ],
     ),
     Item(
+      id: 010,
       name: 'Cokelat Rum',
       description:
           'Cokelat yang dipadukan dengan rum untuk rasa yang lebih kaya.',
@@ -394,33 +549,49 @@ class Menuitem extends ChangeNotifier {
       imagePath: 'assets/images/coklatrum.jpeg',
       availableAddon: [
         addonItem(
+          id: 01,
           name: 'Low Fat Milk',
           price: 5000,
           category: Addoncategory.Milk,
         ),
-        addonItem(name: 'Soya Milk', price: 8000, category: Addoncategory.Milk),
-        addonItem(name: 'Oat Milk', price: 8000, category: Addoncategory.Milk),
         addonItem(
+          id: 02,
+          name: 'Soya Milk',
+          price: 8000,
+          category: Addoncategory.Milk,
+        ),
+        addonItem(
+          id: 03,
+          name: 'Oat Milk',
+          price: 8000,
+          category: Addoncategory.Milk,
+        ),
+        addonItem(
+          id: 04,
           name: 'Extra Rum',
           price: 6000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 05,
           name: 'Extra Es Krim',
           price: 7000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 06,
           name: 'Extra Espresso',
           price: 5000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 07,
           name: 'Extra Regal',
           price: 4000,
           category: Addoncategory.Special,
         ),
         addonItem(
+          id: 08,
           name: 'Extra Saus Caramel',
           price: 8000,
           category: Addoncategory.Special,
@@ -430,6 +601,57 @@ class Menuitem extends ChangeNotifier {
   ];
 
   List<Item> get item => _items;
+
+  void uploadMenuToFirestore() async {
+    final CollectionReference menuCollection = _itemdb.collection('menu');
+
+    for (var item in _items) {
+      await menuCollection.doc(item.id.toString()).set({
+        'name': item.name,
+        'description': item.description,
+        'price': item.price,
+        'category': item.category.toString(),
+        'imagePath': item.imagePath,
+        'availableAddon':
+            item.availableAddon
+                .map(
+                  (addon) => {
+                    'id': addon.id,
+                    'name': addon.name,
+                    'price': addon.price,
+                    'category': addon.category.toString(),
+                  },
+                )
+                .toList(),
+      });
+    }
+    print('Data berhasil diunggah ke Firestore!');
+  }
+
+  Stream<List<Item>> fetchMenuFromFirestore() {
+    return _itemdb.collection('menu').snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
+        var data = doc.data();
+        return Item(
+          id: int.parse(doc.id),
+          name: data['name'],
+          description: data['description'],
+          price: data['price'],
+          category: categoryItem.coffee, // Ubah sesuai kategori
+          imagePath: data['imagePath'],
+          availableAddon:
+              (data['availableAddon'] as List<dynamic>).map((addon) {
+                return addonItem(
+                  id: addon['id'],
+                  name: addon['name'],
+                  price: addon['price'],
+                  category: Addoncategory.Special, // Ubah sesuai kategori
+                );
+              }).toList(),
+        );
+      }).toList();
+    });
+  }
 
   // filter item berdasarkan category
   categoryItem _selectedCategory = categoryItem.all;
@@ -452,14 +674,49 @@ class Menuitem extends ChangeNotifier {
   }
 
   // CART
-
   List<Cart> _cart = [];
   List<Cart> get cart => _cart;
+  bool isloading = true;
 
   // function
+  // Save cart to Firestore
+  Future<void> _saveCartToFirestore(String? uid) async {
+    if (uid == null) return;
+
+    final CollectionReference cartCollection = _itemdb
+        .collection('users')
+        .doc(uid)
+        .collection('cart');
+
+    for (var cartItem in _cart) {
+      await cartCollection
+          .doc(cartItem.item.id.toString())
+          .set(cartItem.toMap());
+    }
+  }
+
+  Future<void> fetchCartFromFirestore(String? uid, BuildContext context) async {
+    if (uid == null) return;
+
+    final QuerySnapshot cartSnapshot =
+        await _itemdb.collection('users').doc(uid).collection('cart').get();
+
+    _cart =
+        cartSnapshot.docs.map((doc) {
+          return Cart.fromMap(doc.data() as Map<String, dynamic>);
+        }).toList();
+    _checkCartEmpty(context);
+    isloading = false;
+    notifyListeners();
+  }
 
   // add to cart
-  void addCartItem(Item item, List<addonItem> selectedAddons) {
+
+  void addCartItem(
+    Item item,
+    List<addonItem> selectedAddons,
+    String? uid,
+  ) async {
     Cart? cartItem = _cart.firstWhereOrNull((beverage) {
       bool isSameProduct = beverage.item == item;
       bool isSameAddons = ListEquality().equals(
@@ -475,11 +732,13 @@ class Menuitem extends ChangeNotifier {
     } else {
       _cart.add(Cart(item: item, selectedAddon: selectedAddons));
     }
+
+    await _saveCartToFirestore(uid);
     notifyListeners();
   }
 
   // delete cart item
-  void deleteCart(Cart cartItem, BuildContext context) {
+  void deleteCart(Cart cartItem, BuildContext context, String? uid) async {
     int cartIndex = _cart.indexOf(cartItem);
     if (cartIndex != -1) {
       if (_cart[cartIndex].quantity > 1) {
@@ -488,13 +747,16 @@ class Menuitem extends ChangeNotifier {
         _cart.removeAt(cartIndex);
       }
     }
+
+    await _saveCartToFirestore(uid);
     _checkCartEmpty(context);
     notifyListeners();
   }
 
   // clear all item in cart
-  void deleteAllCart(BuildContext context) {
+  void deleteAllCart(BuildContext context, String? uid) async {
     cart.clear();
+    await _saveCartToFirestore(uid);
     _checkCartEmpty(context);
     notifyListeners();
   }
@@ -553,5 +815,4 @@ class Menuitem extends ChangeNotifier {
       Provider.of<Paymethprovider>(context, listen: false).clearMethod();
     }
   }
-
 }

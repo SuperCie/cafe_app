@@ -28,4 +28,59 @@ class Cart {
     );
     return formatCurrency.format(totalPrice);
   }
+
+  // Convert Cart to Map for Firestore
+  Map<String, dynamic> toMap() {
+    return {
+      'item': {
+        'id': item.id.toString(),
+        'name': item.name,
+        'description': item.description,
+        'price': item.price,
+        'imagePath': item.imagePath,
+        'category': item.category.toString(),
+      },
+      'quantity': quantity,
+      'selectedAddon':
+          selectedAddon
+              .map(
+                (addon) => {
+                  'id': addon.id,
+                  'name': addon.name,
+                  'price': addon.price,
+                  'category': addon.category.toString(),
+                },
+              )
+              .toList(),
+    };
+  }
+
+  // Create Cart from Firestore Map
+  factory Cart.fromMap(Map<String, dynamic> map) {
+    return Cart(
+      item: Item(
+        id: map['item']['id'],
+        name: map['item']['name'],
+        description: map['item']['description'],
+        price: map['item']['price'],
+        imagePath: map['item']['imagePath'],
+        category: categoryItem.values.firstWhere(
+          (e) => e.toString() == map['item']['category'],
+        ),
+        availableAddon: [], // Addons are not needed here
+      ),
+      quantity: map['quantity'],
+      selectedAddon:
+          (map['selectedAddon'] as List<dynamic>).map((addon) {
+            return addonItem(
+              id: addon['id'],
+              name: addon['name'],
+              price: addon['price'],
+              category: Addoncategory.values.firstWhere(
+                (e) => e.toString() == addon['category'],
+              ),
+            );
+          }).toList(),
+    );
+  }
 }

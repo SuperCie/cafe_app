@@ -1,10 +1,11 @@
-import 'package:coffee_app/data/datauser/userprovider.dart';
+import 'package:coffee_app/data/database/userprovider.dart';
 import 'package:coffee_app/data/menuitem.dart';
 import 'package:coffee_app/data/storeprovider.dart';
 import 'package:coffee_app/models/components/sliverappbarmodel.dart';
 import 'package:coffee_app/models/components/slivercategorybar.dart';
 import 'package:coffee_app/models/components/tileitem.dart';
 import 'package:coffee_app/screens/cartscreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,11 +17,17 @@ class Homescreen extends StatefulWidget {
 }
 
 class _HomescreenState extends State<Homescreen> {
+  final userId = FirebaseAuth.instance.currentUser?.uid;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     Provider.of<Userprovider>(context, listen: false).fetchUserData();
+    Provider.of<Menuitem>(context, listen: false).fetchMenuFromFirestore();
+    Provider.of<Menuitem>(
+      context,
+      listen: false,
+    ).fetchCartFromFirestore(userId, context);
   }
 
   @override

@@ -1,4 +1,4 @@
-import 'package:coffee_app/data/datauser/userprovider.dart';
+import 'package:coffee_app/data/database/userprovider.dart';
 import 'package:coffee_app/models/components/containerappbar.dart';
 import 'package:coffee_app/screens/inboxscreen.dart';
 import 'package:coffee_app/screens/profilescreen.dart';

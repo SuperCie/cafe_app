@@ -1,18 +1,20 @@
 import 'package:coffee_app/data/item.dart';
 import 'package:coffee_app/data/menuitem.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class Itempage extends StatefulWidget {
   final Item items;
-  Itempage({super.key, required this.items});
+  Itempage({super.key, required this.items,});
 
   @override
   State<Itempage> createState() => _ItempageState();
 }
 
 class _ItempageState extends State<Itempage> {
+  final userId = FirebaseAuth.instance.currentUser?.uid;
   final ScrollController _scrollController = ScrollController();
 
   // Selected Addons by Category
@@ -103,6 +105,12 @@ class _ItempageState extends State<Itempage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    Provider.of<Menuitem>(context, listen: false).fetchMenuFromFirestore();
+  }
+
+  @override
   Widget build(BuildContext context) {
     void addCartItem(Item item, Map<Addoncategory, addonItem?> selectedAddons) {
       Provider.of<Menuitem>(context, listen: false);
@@ -115,7 +123,7 @@ class _ItempageState extends State<Itempage> {
         }
       });
 
-      context.read<Menuitem>().addCartItem(item, currentlySelected);
+      context.read<Menuitem>().addCartItem(item, currentlySelected, userId);
     }
 
     return Stack(

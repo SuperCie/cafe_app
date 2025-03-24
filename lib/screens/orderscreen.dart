@@ -1,4 +1,4 @@
-import 'package:coffee_app/data/datauser/userprovider.dart';
+import 'package:coffee_app/data/database/userprovider.dart';
 import 'package:coffee_app/data/menuitem.dart';
 import 'package:coffee_app/data/paymethprovider.dart';
 import 'package:coffee_app/data/storeprovider.dart';
