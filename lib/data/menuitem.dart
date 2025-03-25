@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coffee_app/autentication/helper/displayerror.dart';
 import 'package:coffee_app/data/cart.dart';
 import 'package:coffee_app/data/item.dart';
 import 'package:coffee_app/data/paymethprovider.dart';
 import 'package:coffee_app/data/paymeths.dart';
 import 'package:coffee_app/data/store.dart';
 import 'package:coffee_app/data/storeprovider.dart';
+import 'package:coffee_app/screens/thankscreen.dart';
 import 'package:collection/collection.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -767,27 +769,56 @@ class Menuitem extends ChangeNotifier {
   }
 
   // delete cart item
-  void deleteCart(Cart cartItem, BuildContext context, String? uid) async {
-    int cartIndex = _cart.indexOf(cartItem);
-    if (cartIndex != -1) {
-      if (_cart[cartIndex].quantity > 1) {
-        _cart[cartIndex].quantity--;
-      } else {
-        _cart.removeAt(cartIndex);
-      }
-    }
+  Future<void> deleteCart(
+    Cart cartItem,
+    BuildContext context,
+    String? uid,
+  ) async {
+    try {
+      final cartRef = _itemdb.collection('users').doc(uid).collection('cart');
+      final itemDoc = cartRef.doc(cartItem.item.id.toString());
 
-    await _saveCartToFirestore(uid);
-    _checkCartEmpty(context);
-    notifyListeners();
+      int cartIndex = _cart.indexOf(cartItem);
+      if (cartIndex != -1) {
+        if (_cart[cartIndex].quantity > 1) {
+          _cart[cartIndex].quantity--;
+          await _saveCartToFirestore(uid);
+        } else {
+          _cart.removeAt(cartIndex);
+          await itemDoc.delete();
+        }
+      }
+      _checkCartEmpty(context);
+      notifyListeners();
+    } catch (e) {
+      displayError(context, e.toString());
+    }
   }
 
   // clear all item in cart
-  void deleteAllCart(BuildContext context, String? uid) async {
-    cart.clear();
-    await _saveCartToFirestore(uid);
-    _checkCartEmpty(context);
-    notifyListeners();
+  Future<void> deleteAllCart(BuildContext context, String? uid) async {
+    try {
+      final cartRef = _itemdb.collection('users').doc(uid).collection('cart');
+      final snapshot = await cartRef.get();
+
+      if (snapshot.docs.isNotEmpty) {
+        WriteBatch batch = _itemdb.batch();
+        for (var doc in snapshot.docs) {
+          batch.delete(doc.reference);
+        }
+        await batch.commit();
+      }
+
+      // Kosongkan cart lokal
+      _cart.clear();
+      if (context.mounted) {
+        Provider.of<Storeprovider>(context, listen: false).clearStore();
+        Provider.of<Paymethprovider>(context, listen: false).clearMethod();
+        notifyListeners();
+      }
+    } catch (e) {
+      displayError(context, e.toString());
+    }
   }
 
   // TOTAL PRICE FOR CART ITEM
@@ -842,6 +873,88 @@ class Menuitem extends ChangeNotifier {
     if (cart.isEmpty) {
       Provider.of<Storeprovider>(context, listen: false).clearStore();
       Provider.of<Paymethprovider>(context, listen: false).clearMethod();
+    }
+  }
+
+  // ordered
+  Future<void> checkOutOrder({
+    required String uid,
+    required String userName,
+    required String storeName,
+    required String paymentMethod,
+    context,
+  }) async {
+    if (_cart.isEmpty) return;
+
+    try {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => Center(child: CircularProgressIndicator()),
+      );
+
+      final CollectionReference orderCollection = _itemdb
+          .collection('users')
+          .doc(uid)
+          .collection('transaction');
+
+      //generate transaction id
+      final QuerySnapshot ordersnapshot = await orderCollection.get();
+      final int orderNumber = ordersnapshot.docs.length + 1;
+      final String transactionId =
+          "#KS-${orderNumber.toString().padLeft(5, '0')}";
+
+      // convert
+      final List<Map<String, dynamic>> items =
+          _cart
+              .map(
+                (cartItems) => {
+                  'name': cartItems.item.name,
+                  'price': cartItems.item.price,
+                  'qty': cartItems.quantity,
+                  'addons': cartItems.selectedAddon.map((addon) => addon.name),
+                  'total': totalAllCart,
+                },
+              )
+              .toList();
+
+      //simpan order ke database
+      await orderCollection.doc(transactionId).set({
+        'transactionId': transactionId,
+        'userId': uid,
+        'userName': userName,
+        'storeName': storeName,
+        'items': items,
+        'payment': paymentMethod,
+        'note': restaurantNote,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+      await deleteAllCart(context, uid);
+
+      if (context.mounted) {
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            pageBuilder:
+                (context, animation, secondaryAnimation) => Thankscreen(),
+            transitionDuration: Duration(milliseconds: 500),
+            transitionsBuilder: (
+              context,
+              animation,
+              secondaryAnimation,
+              child,
+            ) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        Navigator.pop(context);
+        displayError(context, e.toString());
+      }
     }
   }
 }

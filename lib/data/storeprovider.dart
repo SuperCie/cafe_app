@@ -6,12 +6,27 @@ class Storeprovider extends ChangeNotifier {
 
   Store? get selectedStore => _selectedStore;
 
-  void setStore (Store store){
+  String get storeInitials {
+    if (_selectedStore == null || _selectedStore!.name.isEmpty) {
+      return 'Default';
+    }
+    // untuk inisial store
+    List<String> words = _selectedStore!.name.split('');
+    String initials = '';
+    for (int i = 0; i < words.length && initials.length < 3; i++) {
+      if (words[i].isNotEmpty) {
+        initials += words[i][0].toUpperCase();
+      }
+    }
+    return initials;
+  }
+
+  void setStore(Store store) {
     _selectedStore = store;
     notifyListeners();
   }
 
-  void clearStore(){
+  void clearStore() {
     _selectedStore = null;
     notifyListeners();
   }

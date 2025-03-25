@@ -1,3 +1,4 @@
+import 'package:coffee_app/screens/homescreen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
@@ -14,7 +15,10 @@ class _ThankscreenState extends State<Thankscreen> {
   void initState() {
     super.initState();
     Future.delayed(Duration(seconds: 3), () {
-      Navigator.pop(context);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Homescreen()),
+      );
     });
   }
 

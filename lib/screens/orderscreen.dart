@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coffee_app/autentication/helper/displayerror.dart';
 import 'package:coffee_app/data/database/userprovider.dart';
 import 'package:coffee_app/data/menuitem.dart';
 import 'package:coffee_app/data/paymethprovider.dart';
@@ -5,6 +7,7 @@ import 'package:coffee_app/data/storeprovider.dart';
 import 'package:coffee_app/models/components/containernopad.dart';
 import 'package:coffee_app/models/components/ordertile.dart';
 import 'package:coffee_app/screens/thankscreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -25,9 +28,35 @@ class _OrderscreenState extends State<Orderscreen> {
     Provider.of<Userprovider>(context, listen: false).fetchUserData();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    void slidePay(BuildContext context) {
+  void slidePay(BuildContext context) async {
+    final user = FirebaseAuth.instance.currentUser;
+    final selectedStore =
+        Provider.of<Storeprovider>(context, listen: false).selectedStore;
+    final method =
+        Provider.of<Paymethprovider>(context, listen: false).selectedMethods;
+    try {
+      //ambil data dari database
+      DocumentSnapshot userData =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user!.uid)
+              .get();
+
+      String userName = userData['name'];
+
+      Provider.of<Menuitem>(context, listen: false).checkOutOrder(
+        uid: userData.id,
+        userName: userName,
+        storeName: selectedStore!.name,
+        paymentMethod: method!.name,
+      );
+
+      // hapus
+      Provider.of<Storeprovider>(context, listen: false).clearStore();
+      Provider.of<Paymethprovider>(context, listen: false).clearMethod();
+
+      await Future.delayed(Duration(milliseconds: 300));
+
       Navigator.push(
         context,
         PageRouteBuilder(
@@ -39,8 +68,13 @@ class _OrderscreenState extends State<Orderscreen> {
           },
         ),
       );
+    } catch (e) {
+      displayError(context, e.toString());
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Consumer<Menuitem>(
       builder: (context, menuItem, child) {
         // get cart data
