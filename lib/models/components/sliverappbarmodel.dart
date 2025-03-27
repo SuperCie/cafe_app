@@ -1,6 +1,6 @@
 import 'package:coffee_app/data/database/userprovider.dart';
 import 'package:coffee_app/models/components/containerappbar.dart';
-import 'package:coffee_app/screens/inboxscreen.dart';
+import 'package:coffee_app/screens/historytrans.dart';
 import 'package:coffee_app/screens/profilescreen.dart';
 import 'package:coffee_app/screens/settingscreen.dart';
 import 'package:flutter/material.dart';
@@ -46,10 +46,10 @@ class _SliverappbarmodelState extends State<Sliverappbarmodel> {
     }
 
     // ignore: non_constant_identifier_names
-    void NavigateInbox() {
+    void Navigatehistory() {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => Inboxscreen()),
+        MaterialPageRoute(builder: (context) => Historytrans()),
       );
     }
 
@@ -98,10 +98,10 @@ class _SliverappbarmodelState extends State<Sliverappbarmodel> {
                             children: [
                               Image.asset(
                                 'assets/icons/personicon.png',
-                                height: 30,
-                                width: 30,
+                                height: 25,
+                                width: 25,
                               ),
-                              SizedBox(width: 10),
+                              SizedBox(width: 5),
                               Text(
                                 'PROFILE',
                                 style: GoogleFonts.montserrat(
@@ -114,17 +114,17 @@ class _SliverappbarmodelState extends State<Sliverappbarmodel> {
                         ),
                         SizedBox(width: 10),
                         Containerappbar(
-                          ontap: NavigateInbox,
+                          ontap: Navigatehistory,
                           widget: Row(
                             children: [
                               Image.asset(
-                                'assets/icons/mailicon.png',
-                                height: 30,
-                                width: 30,
+                                'assets/icons/transactionicon.png',
+                                height: 25,
+                                width: 25,
                               ),
-                              SizedBox(width: 10),
+                              SizedBox(width: 5),
                               Text(
-                                'INBOX',
+                                'HISTORY',
                                 style: GoogleFonts.montserrat(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -141,10 +141,10 @@ class _SliverappbarmodelState extends State<Sliverappbarmodel> {
                             children: [
                               Image.asset(
                                 'assets/icons/settingsicon.png',
-                                height: 30,
-                                width: 30,
+                                height: 25,
+                                width: 25,
                               ),
-                              SizedBox(width: 10),
+                              SizedBox(width: 5),
                               Text(
                                 'SETTING',
                                 style: GoogleFonts.montserrat(

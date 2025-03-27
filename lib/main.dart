@@ -1,4 +1,5 @@
 import 'package:coffee_app/autentication/authgate.dart';
+import 'package:coffee_app/data/database/historyprovider.dart';
 import 'package:coffee_app/data/database/userprovider.dart';
 import 'package:coffee_app/data/menuitem.dart';
 import 'package:coffee_app/data/paymethprovider.dart';
@@ -22,6 +23,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => Storeprovider()),
         ChangeNotifierProvider(create: (context) => Paymethprovider()),
         ChangeNotifierProvider(create: (context) => Userprovider()),
+        ChangeNotifierProvider(create: (context) => Historyprovider()),
       ],
       child: CoffeeApp(),
     ),

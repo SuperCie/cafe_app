@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coffee_app/autentication/helper/displayerror.dart';
 import 'package:coffee_app/data/cart.dart';
+import 'package:coffee_app/data/database/userprovider.dart';
 import 'package:coffee_app/data/item.dart';
 import 'package:coffee_app/data/paymethprovider.dart';
 import 'package:coffee_app/data/paymeths.dart';
@@ -15,6 +16,7 @@ import 'package:provider/provider.dart';
 
 class Menuitem extends ChangeNotifier {
   final FirebaseFirestore _itemdb = FirebaseFirestore.instance;
+  final controllerText = TextEditingController();
   final List<Item> _items = [
     // Kategori Coffee
     Item(
@@ -811,11 +813,8 @@ class Menuitem extends ChangeNotifier {
 
       // Kosongkan cart lokal
       _cart.clear();
-      if (context.mounted) {
-        Provider.of<Storeprovider>(context, listen: false).clearStore();
-        Provider.of<Paymethprovider>(context, listen: false).clearMethod();
-        notifyListeners();
-      }
+      _checkCartEmpty(context);
+      notifyListeners();
     } catch (e) {
       displayError(context, e.toString());
     }
@@ -869,92 +868,120 @@ class Menuitem extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearInputNote() {
+    restaurantNote = '';
+    notifyListeners();
+  }
+
   void _checkCartEmpty(BuildContext context) {
     if (cart.isEmpty) {
       Provider.of<Storeprovider>(context, listen: false).clearStore();
       Provider.of<Paymethprovider>(context, listen: false).clearMethod();
+      clearInputNote();
     }
   }
 
   // ordered
-  Future<void> checkOutOrder({
-    required String uid,
-    required String userName,
-    required String storeName,
-    required String paymentMethod,
-    context,
-  }) async {
-    if (_cart.isEmpty) return;
+  Future<void> checkout(BuildContext context) async {
+    final menuItem = Provider.of<Menuitem>(context, listen: false);
+    final storeProvider = Provider.of<Storeprovider>(context, listen: false);
+    final paymentProvider = Provider.of<Paymethprovider>(
+      context,
+      listen: false,
+    );
+    final userProvider = Provider.of<Userprovider>(context, listen: false);
+    final user = FirebaseAuth.instance.currentUser;
 
     try {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => Center(child: CircularProgressIndicator()),
-      );
-
-      final CollectionReference orderCollection = _itemdb
+      //generate transaction ID
+      final ordersRef = _itemdb
           .collection('users')
-          .doc(uid)
+          .doc(user?.uid)
           .collection('transaction');
+      final orderCounter = (await ordersRef.count().get()).count;
+      final transactionID =
+          "KSI-${(orderCounter! + 1).toString().padLeft(5, '0')}";
 
-      //generate transaction id
-      final QuerySnapshot ordersnapshot = await orderCollection.get();
-      final int orderNumber = ordersnapshot.docs.length + 1;
-      final String transactionId =
-          "#KS-${orderNumber.toString().padLeft(5, '0')}";
-
-      // convert
-      final List<Map<String, dynamic>> items =
-          _cart
-              .map(
-                (cartItems) => {
-                  'name': cartItems.item.name,
-                  'price': cartItems.item.price,
-                  'qty': cartItems.quantity,
-                  'addons': cartItems.selectedAddon.map((addon) => addon.name),
-                  'total': totalAllCart,
-                },
-              )
-              .toList();
-
-      //simpan order ke database
-      await orderCollection.doc(transactionId).set({
-        'transactionId': transactionId,
-        'userId': uid,
-        'userName': userName,
-        'storeName': storeName,
-        'items': items,
-        'payment': paymentMethod,
-        'note': restaurantNote,
+      //prepare order
+      final orderData = {
+        'transactionID': transactionID,
+        'userID': user?.uid,
+        'name': userProvider.userData?['name'] ?? 'Customer',
+        'storeName': storeProvider.selectedStore?.name,
+        'payment': paymentProvider.selectedMethods?.name,
+        'note': menuItem.restaurantNote,
         'timestamp': FieldValue.serverTimestamp(),
-      });
-      await deleteAllCart(context, uid);
+        'total': menuItem.totalAllCart,
+        'item':
+            menuItem.cart
+                .map(
+                  (cartItem) => {
+                    'itemId': cartItem.item.id,
+                    'itemName': cartItem.item.name,
+                    'price': cartItem.item.price,
+                    'qty': cartItem.quantity,
+                    'addons':
+                        cartItem.selectedAddon
+                            .map(
+                              (addons) => {
+                                'addonName': addons.name,
+                                'addonPrice': addons.price,
+                              },
+                            )
+                            .toList(),
+                  },
+                )
+                .toList(),
+      };
 
-      if (context.mounted) {
-        Navigator.pop(context);
-        Navigator.push(
-          context,
-          PageRouteBuilder(
-            pageBuilder:
-                (context, animation, secondaryAnimation) => Thankscreen(),
-            transitionDuration: Duration(milliseconds: 500),
-            transitionsBuilder: (
-              context,
-              animation,
-              secondaryAnimation,
-              child,
-            ) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-          ),
-        );
-      }
+      await _itemdb.runTransaction((transaction) async {
+        // save order
+        transaction.set(ordersRef.doc(transactionID), orderData);
+        // delete cartitems
+        final cartItemIds =
+            (await _itemdb
+                    .collection('users')
+                    .doc(user?.uid)
+                    .collection('cart')
+                    .get())
+                .docs
+                .map((doc) => doc.id)
+                .toList();
+        for (var id in cartItemIds) {
+          transaction.delete(
+            _itemdb
+                .collection('users')
+                .doc(user?.uid)
+                .collection('cart')
+                .doc(id),
+          );
+        }
+        if (context.mounted) {
+          // 2. Navigasi PASTI di main thread
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => Thankscreen()),
+                (Route<dynamic> route) => false,
+              );
+            }
+          });
+
+          await Provider.of<Menuitem>(
+            context,
+            listen: false,
+          ).deleteAllCart(context, user?.uid);
+          Provider.of<Storeprovider>(context, listen: false).clearStore();
+          Provider.of<Paymethprovider>(context, listen: false).clearMethod();
+        }
+      });
+
+      // menuItem.deleteAllCart(context, user?.uid);
+      // _checkCartEmpty(context);
+      print('data berhasil disimpan');
     } catch (e) {
-      if (context.mounted) {
-        Navigator.pop(context);
-        displayError(context, e.toString());
-      }
+      print('data gagal disimpan');
     }
   }
 }

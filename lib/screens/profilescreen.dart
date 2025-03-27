@@ -16,13 +16,6 @@ class Profilescreen extends StatelessWidget {
       );
     }
 
-    void switchHistoryPage() {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => Historytrans()),
-      );
-    }
-
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
@@ -50,13 +43,6 @@ class Profilescreen extends StatelessWidget {
               ontap: switchPersonalPage,
               text: 'Personal',
               imagePath: 'assets/icons/personicon.png',
-            ),
-            Divider(thickness: 1.0),
-
-            Tilemodel(
-              ontap: switchHistoryPage,
-              text: 'Transaction History',
-              imagePath: 'assets/icons/transactionicon.png',
             ),
             Divider(thickness: 1.0),
           ],

@@ -24,7 +24,10 @@ class _CarttileState extends State<Carttile> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Provider.of<Menuitem>(context, listen: false).fetchCartFromFirestore(userId, context);
+    Provider.of<Menuitem>(
+      context,
+      listen: false,
+    ).fetchCartFromFirestore(userId, context);
   }
 
   @override
@@ -163,6 +166,9 @@ class _CarttileState extends State<Carttile> {
                                       context,
                                       userId,
                                     );
+                                    if (menuItem.cart.isEmpty) {
+                                      menuItem.clearInputNote();
+                                    }
                                   },
                                   onIncrement: () {
                                     menuItem.addCartItem(

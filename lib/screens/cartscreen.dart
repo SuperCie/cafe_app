@@ -19,7 +19,7 @@ import 'package:provider/provider.dart';
 class Cartscreen extends StatefulWidget {
   final Store? selectedStore;
   final Paymeths? selectedMethods;
-  const Cartscreen({Key? key, this.selectedStore, this.selectedMethods,})
+  const Cartscreen({Key? key, this.selectedStore, this.selectedMethods})
     : super(key: key);
 
   @override
@@ -36,6 +36,10 @@ class _CartscreenState extends State<Cartscreen> {
     super.initState();
     final menuItem = Provider.of<Menuitem>(context, listen: false);
     reNoteController.text = menuItem.restaurantNote;
+    Provider.of<Menuitem>(
+      context,
+      listen: false,
+    ).fetchCartFromFirestore(userId, context);
   }
 
   //function
@@ -96,7 +100,7 @@ class _CartscreenState extends State<Cartscreen> {
       );
       return;
     }
-
+    Navigator.pop(context);
     // Navigasi ke Orderscreen dengan membawa data
     Navigator.push(
       context,
@@ -201,7 +205,10 @@ class _CartscreenState extends State<Cartscreen> {
                         ],
                       ),
                       TextButton(
-                        onPressed: () => menuItem.deleteAllCart(context, userId ),
+                        onPressed: () {
+                          menuItem.deleteAllCart(context, userId);
+                          menuItem.clearInputNote();
+                        },
                         child: Text(
                           'Delete All',
                           style: GoogleFonts.montserrat(

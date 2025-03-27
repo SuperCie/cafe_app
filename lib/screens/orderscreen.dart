@@ -21,69 +21,62 @@ class Orderscreen extends StatefulWidget {
 }
 
 class _OrderscreenState extends State<Orderscreen> {
+  final user = FirebaseAuth.instance.currentUser?.uid;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    Provider.of<Userprovider>(context, listen: false).fetchUserData();
+    Future.microtask(() {
+      Provider.of<Userprovider>(context, listen: false).fetchUserData();
+      Provider.of<Menuitem>(
+        context,
+        listen: false,
+      ).fetchCartFromFirestore(user, context);
+    });
   }
 
-  void slidePay(BuildContext context) async {
-    final user = FirebaseAuth.instance.currentUser;
-    final selectedStore =
-        Provider.of<Storeprovider>(context, listen: false).selectedStore;
-    final method =
-        Provider.of<Paymethprovider>(context, listen: false).selectedMethods;
+  Future<void> slidePay(BuildContext context) async {
+    final navigatorContext = Navigator.of(context).context;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder:
+          (context) => PopScope(
+            canPop: false,
+            child: Center(child: CircularProgressIndicator()),
+          ),
+    );
     try {
-      //ambil data dari database
-      DocumentSnapshot userData =
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(user!.uid)
-              .get();
-
-      String userName = userData['name'];
-
-      Provider.of<Menuitem>(context, listen: false).checkOutOrder(
-        uid: userData.id,
-        userName: userName,
-        storeName: selectedStore!.name,
-        paymentMethod: method!.name,
-      );
-
-      // hapus
-      Provider.of<Storeprovider>(context, listen: false).clearStore();
-      Provider.of<Paymethprovider>(context, listen: false).clearMethod();
-
-      await Future.delayed(Duration(milliseconds: 300));
-
-      Navigator.push(
+      await Provider.of<Menuitem>(
         context,
-        PageRouteBuilder(
-          pageBuilder:
-              (context, animation, secondaryAnimation) => Thankscreen(),
-          transitionDuration: Duration(milliseconds: 500),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(opacity: animation, child: child);
-          },
-        ),
-      );
+        listen: false,
+      ).checkout(navigatorContext);
     } catch (e) {
-      displayError(context, e.toString());
+      if (Navigator.of(navigatorContext).canPop()) {
+        Navigator.of(navigatorContext).pop();
+      }
+      displayError(navigatorContext, e.toString());
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<Menuitem>(
-      builder: (context, menuItem, child) {
+    return Consumer4<Menuitem, Storeprovider, Paymethprovider, Userprovider>(
+      builder: (
+        context,
+        menuItem,
+        storeProvider,
+        paymethProvider,
+        userprovider,
+        child,
+      ) {
         // get cart data
-        final userCart = context.watch<Menuitem>();
-        final selectedStore = context.watch<Storeprovider>().selectedStore;
-        final selectedPayment =
-            context.watch<Paymethprovider>().selectedMethods;
-        final userData =
-            Provider.of<Userprovider>(context, listen: false).userData;
+        final userCart = menuItem.cart;
+        final selectedStore = storeProvider.selectedStore;
+        final selectedPayment = paymethProvider.selectedMethods;
+        final userData = userprovider.userData;
+
         return Scaffold(
           appBar: AppBar(
             elevation: 0,
@@ -133,7 +126,7 @@ class _OrderscreenState extends State<Orderscreen> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    "-> ${selectedStore!.name}",
+                    "-> ${selectedStore?.name}",
                     style: GoogleFonts.montserrat(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -141,7 +134,7 @@ class _OrderscreenState extends State<Orderscreen> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    selectedStore.address,
+                    selectedStore?.address ?? 'Alamat tidak tersedia',
                     style: GoogleFonts.montserrat(fontSize: 18),
                     textAlign: TextAlign.justify,
                   ),
@@ -165,9 +158,9 @@ class _OrderscreenState extends State<Orderscreen> {
                     padding: EdgeInsets.zero,
                     shrinkWrap: true,
 
-                    itemCount: userCart.cart.length,
+                    itemCount: userCart.length,
                     itemBuilder: (context, index) {
-                      final orderCartList = userCart.cart[index];
+                      final orderCartList = userCart[index];
                       return Ordertile(cart: orderCartList);
                     },
                   ),
@@ -213,11 +206,11 @@ class _OrderscreenState extends State<Orderscreen> {
                   Containernopad(
                     widget: ListTile(
                       leading: Image.asset(
-                        selectedPayment!.imagePath,
+                        selectedPayment?.imagePath ?? 'Gambar tidak tersedia',
                         scale: 15,
                       ),
                       title: Text(
-                        "Transfer Bank ${selectedPayment.name}",
+                        "Transfer Bank ${selectedPayment?.name}",
                         style: GoogleFonts.montserrat(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -267,9 +260,7 @@ class _OrderscreenState extends State<Orderscreen> {
                     sliderButtonIcon: Icon(Icons.arrow_forward_ios_rounded),
                     text: 'Slide to Pay',
                     sliderRotate: false,
-                    onSubmit: () {
-                      slidePay(context);
-                    },
+                    onSubmit: () => slidePay(context),
                   ),
                 ],
               ),
