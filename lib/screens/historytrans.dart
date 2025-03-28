@@ -63,21 +63,18 @@ class _HistorytransState extends State<Historytrans> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              leading: Text(
-                                tileOrderHistory.storeName,
-                                style: GoogleFonts.montserrat(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            Text(
+                              "// ${tileOrderHistory.orderId}",
+                              style: GoogleFonts.montserrat(
+                                fontSize: 16,
+                                color: Colors.grey[600],
                               ),
-                              title: Text(
-                                '// ${tileOrderHistory.orderId}',
-                                style: GoogleFonts.montserrat(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            ),
+                            Text(
+                              tileOrderHistory.storeName,
+                              style: GoogleFonts.montserrat(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                             Divider(thickness: 1.5),

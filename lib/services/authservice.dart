@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coffee_app/autentication/authgate.dart';
+import 'package:coffee_app/autentication/completeprofile.dart';
 import 'package:coffee_app/autentication/helper/displayerror.dart';
 import 'package:coffee_app/autentication/helper/displayproceed.dart';
 import 'package:coffee_app/autentication/helper/scaffoldmessager.dart';
@@ -7,11 +8,55 @@ import 'package:coffee_app/data/database/userprovider.dart';
 import 'package:coffee_app/data/menuitem.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
 class Authserviceclass {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // google signin
+  Future<UserCredential?> signInwithGoogle(BuildContext context) async {
+    try {
+      // final interactive sign in process
+      final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
+
+      // obtain the auth details from request
+      final GoogleSignInAuthentication gAuth = await gUser!.authentication;
+      //signn in to firebase
+      final UserCredential userCredential = await _auth.signInWithCredential(
+        GoogleAuthProvider.credential(
+          accessToken: gAuth.accessToken,
+          idToken: gAuth.idToken,
+        ),
+      );
+
+      // check data
+      if (userCredential.additionalUserInfo!.isNewUser) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder:
+                (context) => Completeprofile(
+                  uid: userCredential.user!.uid,
+                  email: gUser.email,
+                ),
+          ),
+        );
+      } else {
+        await Provider.of<Userprovider>(context, listen: false).fetchUserData();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => Authgate()),
+        );
+      }
+    } catch (e) {
+      print(e.toString());
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: ${e.toString()}")));
+    }
+  }
 
   // BY EMAIL
   // register user method
@@ -91,6 +136,7 @@ class Authserviceclass {
         confirmTap: () async {
           Navigator.pop(context);
           await _auth.signOut();
+          await GoogleSignIn().signOut();
           Provider.of<Userprovider>(context, listen: false).clearUserData();
           Provider.of<Menuitem>(
             context,

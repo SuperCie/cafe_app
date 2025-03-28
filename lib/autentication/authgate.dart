@@ -10,16 +10,31 @@ class Authgate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  return  StreamBuilder<User?>(stream: _auth.user, builder: (context, snapshot) {
-    if (snapshot.connectionState == ConnectionState.waiting){
-      return Center(child: CircularProgressIndicator(),);
-    } else {
-      if(snapshot.hasData) {
-        return Homescreen();
-      } else {
-        return Handler();
-      }
-    }
-  },);
+    print("FirebaseAuth user: ${FirebaseAuth.instance.currentUser}");
+    return StreamBuilder<User?>(
+      stream: _auth.user,
+      builder: (context, snapshot) {
+        print("AuthGate - Snapshot data: ${snapshot.data}");
+        print("AuthGate - User ID: ${snapshot.data?.uid}");
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (snapshot.hasData) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => Homescreen()),
+              );
+            } else {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => Handler()),
+              );
+            }
+          });
+          return Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+      },
+    );
   }
 }

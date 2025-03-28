@@ -36,6 +36,22 @@ class _RegistscreenState extends State<Registscreen> {
       initialDate: DateTime(2000),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Colors.blue,
+              onPrimary: Colors.black,
+              onSurface: Colors.black,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(foregroundColor: Colors.blueAccent),
+            ),
+          ),
+
+          child: child!,
+        );
+      },
     );
 
     if (pickedDate != null) {
@@ -83,7 +99,7 @@ class _RegistscreenState extends State<Registscreen> {
                       text: 'Name',
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Nama tidak boleh kosong';
+                          return "Name field can't be empty";
                         } else {
                           return null;
                         }
@@ -103,7 +119,7 @@ class _RegistscreenState extends State<Registscreen> {
                         if (value!.contains('@') && value!.endsWith('.com')) {
                           return null;
                         } else {
-                          return 'Email tidak sesuai';
+                          return 'Please enter a valid email address';
                         }
                       },
                       prefixIcon: Icon(Icons.email_rounded),
@@ -119,7 +135,7 @@ class _RegistscreenState extends State<Registscreen> {
                       text: 'Password',
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Password tidak boleh kosong';
+                          return "Password field can't be empty";
                         } else {
                           return null;
                         }
@@ -150,7 +166,7 @@ class _RegistscreenState extends State<Registscreen> {
                       text: 'Date of Birth',
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Data tanggal lahir tidak boleh kosong';
+                          return "Date of Birth field can't be empty";
                         } else {
                           return null;
                         }
@@ -200,7 +216,9 @@ class _RegistscreenState extends State<Registscreen> {
                 SizedBox(height: 20),
                 Column(
                   children: [
-                    Googlebutton(ontap: () {}),
+                    Googlebutton(
+                      ontap: () => Authserviceclass().signInwithGoogle(context),
+                    ),
                     SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

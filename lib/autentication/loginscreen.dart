@@ -154,7 +154,9 @@ class _LoginscreenState extends State<Loginscreen> {
                 SizedBox(height: 30),
                 Column(
                   children: [
-                    Googlebutton(ontap: () {}),
+                    Googlebutton(
+                      ontap: () => Authserviceclass().signInwithGoogle(context),
+                    ),
                     SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

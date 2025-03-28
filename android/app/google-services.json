@@ -7,12 +7,25 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:443843120877:android:757cdbe9060314fe0f06e4",
+        "mobilesdk_app_id": "1:443843120877:android:b38ee4bc518e80fc0f06e4",
         "android_client_info": {
           "package_name": "com.example.coffee_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "443843120877-9u0b33hc9n8kf015adfs8m4vdpv7phi3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.coffee_app",
+            "certificate_hash": "52629fefa1cf2f46726015f9b23acbe7b159fd24"
+          }
+        },
+        {
+          "client_id": "443843120877-bacvp8kfn4t2lp7bnaivo60193ue5h45.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAUdTL5kS5MYzFgMYRV5-yfejsvxkfkBlY"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "443843120877-bacvp8kfn4t2lp7bnaivo60193ue5h45.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

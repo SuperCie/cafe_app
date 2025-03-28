@@ -53,7 +53,8 @@ class _PersonalscreenState extends State<Personalscreen> {
                   ListTile(
                     leading: Icon(Icons.person),
                     title: Text(
-                      "${userData?['name']}".toUpperCase(),
+                      "${userData?['name']}".toUpperCase() ??
+                          userData?['displayName'],
                       style: GoogleFonts.montserrat(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -87,17 +88,6 @@ class _PersonalscreenState extends State<Personalscreen> {
                   ),
                   Divider(thickness: 1.0),
                 ],
-              ),
-              Mybutton(
-                child: Text(
-                  'Change Password',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                ontap: () {},
               ),
             ],
           ),
