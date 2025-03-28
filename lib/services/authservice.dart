@@ -213,6 +213,14 @@ class Authserviceclass {
     return _auth.authStateChanges();
   }
 
+  Future<void> sendresetPassword(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      throw FirebaseAuthException(code: e.code, message: e.message);
+    }
+  }
+
   // untuk mengambil data user dari firestore
   Future<Map<String, dynamic>?> getUserData(
     String uid,

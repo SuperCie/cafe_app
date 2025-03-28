@@ -106,7 +106,19 @@ class _LoginscreenState extends State<Loginscreen> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            if (emailController.text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Please enter your email address',
+                                  ),
+                                ),
+                              );
+                              return;
+                            }
+                            _auth.sendresetPassword(emailController.text);
+                          },
                           child: Text(
                             'Forgot Password?',
                             style: GoogleFonts.roboto(
